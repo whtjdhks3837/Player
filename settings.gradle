@@ -1,0 +1,3 @@
+rootProject.name='DynamicMediaView'
+include ':app'
+include ':dynamic_media_view'
