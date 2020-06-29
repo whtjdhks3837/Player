@@ -3,8 +3,10 @@
 
     <application>
         <activity
-            android:name=".MediaActivity"
-            android:screenOrientation="landscape"
+            android:name=".presenter.ListActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
+            android:name=".presenter.PlayerActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
     </application>
 </manifest>
