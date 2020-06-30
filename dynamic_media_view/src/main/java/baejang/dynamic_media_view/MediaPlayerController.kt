@@ -1,4 +1,4 @@
-package baejang.dynamic_media_view.controller
+package baejang.dynamic_media_view
 
 import android.os.Handler
 import com.google.android.exoplayer2.ExoPlaybackException
@@ -33,7 +33,9 @@ class MediaPlayerController(private val player: Player, private val handler: Han
     }
 
     private fun updateProgress() {
-        handler.postDelayed(progressUpdateThread, PROGRESS_UPDATE_MILLI_SEC)
+        handler.postDelayed(progressUpdateThread,
+            PROGRESS_UPDATE_MILLI_SEC
+        )
     }
 
     private fun release() {

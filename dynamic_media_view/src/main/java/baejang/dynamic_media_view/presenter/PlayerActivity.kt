@@ -1,83 +1,61 @@
 package baejang.dynamic_media_view.presenter
 
 import android.os.Bundle
-import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
+import baejang.dynamic_media_view.ExoPlayerUtil
 import baejang.dynamic_media_view.R
-import baejang.dynamic_media_view.controller.MediaPlayerController
-import baejang.dynamic_media_view.controller.MediaSourceProvider
-import baejang.dynamic_media_view.data.PlayList
-import baejang.dynamic_media_view.databinding.ActivityPlayerBinding
-import baejang.dynamic_media_view.util.toast
+import baejang.dynamic_media_view.data.BaseMedia
+import baejang.dynamic_media_view.data.source.ConcatenatingMediaSourceImpl
+import baejang.dynamic_media_view.hlsVideoUrl1
 import com.google.android.exoplayer2.ExoPlayerFactory
+import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.RandomTrackSelection
 import com.google.android.exoplayer2.ui.DebugTextViewHelper
 import com.google.android.exoplayer2.util.EventLogger
-import com.google.gson.Gson
+import kotlinx.android.synthetic.main.activity_player.*
 
 class PlayerActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityPlayerBinding
-    private val handler = Handler()
-
-    private val mediaPlayer by lazy { ExoPlayerFactory.newSimpleInstance(this) }
-    private val mediaSourceProvider by lazy {
-        MediaSourceProvider(intent.getStringExtra("playlist")
-            ?.let { Gson().fromJson(it, PlayList::class.java) } ?: PlayList(listOf()))
-    }
-    private val mediaController by lazy { MediaPlayerController(mediaPlayer, handler) }
+    private lateinit var mediaPlayer: SimpleExoPlayer
+    private lateinit var mediaSourceProvider: ConcatenatingMediaSourceImpl.Provider
+    private lateinit var mediaSource: ConcatenatingMediaSourceImpl
     private val eventLogger = EventLogger(DefaultTrackSelector(RandomTrackSelection.Factory()))
 
-    private val position by lazy { intent.getIntExtra("position", 0) }
+    private val mediaSet = setOf(BaseMedia("hi", hlsVideoUrl1, "m3u8"))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_player)
-        binding.playerView.apply {
-            this.player = mediaPlayer.apply {
-                playWhenReady = true
-            }.apply {
-                addAnalyticsListener(eventLogger)
-            }
+        setContentView(R.layout.activity_player)
+        mediaPlayer = ExoPlayerFactory.newSimpleInstance(this).apply {
+            addAnalyticsListener(eventLogger)
         }
-
-        mediaController.apply {
-            playEndCallback = onPlayEnd()
-            errorCallback = { toast("error occur") }
+        mediaSourceProvider = ConcatenatingMediaSourceImpl.Provider().apply {
+            setItems(mediaSet)
         }
+        mediaSource = ConcatenatingMediaSourceImpl(
+            mediaSourceProvider, ExoPlayerUtil.buildDataSourceFactory
+        )
 
-        DebugTextViewHelper(mediaPlayer, binding.debug).start()
-        mediaSourceProvider.setMediaSource(position)
-        mediaPrepareAndDownload()
+        playerView.player = mediaPlayer.apply {
+            playWhenReady = true
+        }
+        DebugTextViewHelper(mediaPlayer, debugText).start()
+        mediaPlayer.prepare(mediaSource.mediaSource)
     }
 
     override fun onResume() {
         super.onResume()
-        binding.playerView.onResume()
+        playerView.onResume()
     }
 
     override fun onPause() {
         super.onPause()
-        binding.playerView.onPause()
+        playerView.onPause()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         mediaPlayer.release()
-    }
-
-    private fun mediaPrepareAndDownload() {
-        mediaPlayer.prepare(mediaSourceProvider.mediaSource)
-    }
-
-    private fun onPlayEnd(): () -> Unit = {
-        if (mediaSourceProvider.hasNext()) {
-            mediaSourceProvider.next()
-            mediaPrepareAndDownload()
-        } else {
-            toast("마지막 영상입니다.")
-        }
     }
 }

@@ -1,10 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="baejang.dynamic_media_view">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <application>
-        <activity
-            android:name=".presenter.ListActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".presenter.PlayerActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
