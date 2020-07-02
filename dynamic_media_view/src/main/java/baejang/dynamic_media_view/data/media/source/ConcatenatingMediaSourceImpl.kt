@@ -1,8 +1,8 @@
-package baejang.dynamic_media_view.data.source
+package baejang.dynamic_media_view.data.media.source
 
 import androidx.core.net.toUri
-import baejang.dynamic_media_view.data.BaseMedia
-import baejang.dynamic_media_view.of
+import baejang.dynamic_media_view.data.media.BaseMedia
+import baejang.dynamic_media_view.util.from
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.upstream.DataSource
 
@@ -17,7 +17,7 @@ class ConcatenatingMediaSourceImpl(
         with(mediaSource) {
             clear()
             for (item in provider.getItems()) {
-                addMediaSource(dataSourceFactory.of(item.url.toUri(), item.extension))
+                addMediaSource(dataSourceFactory.from(item.url.toUri()))
             }
         }
     }

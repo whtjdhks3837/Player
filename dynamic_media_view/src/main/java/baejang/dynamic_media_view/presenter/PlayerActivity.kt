@@ -2,11 +2,11 @@ package baejang.dynamic_media_view.presenter
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import baejang.dynamic_media_view.ExoPlayerUtil
+import baejang.dynamic_media_view.PlayerManager
 import baejang.dynamic_media_view.R
-import baejang.dynamic_media_view.data.BaseMedia
-import baejang.dynamic_media_view.data.source.ConcatenatingMediaSourceImpl
-import baejang.dynamic_media_view.hlsVideoUrl1
+import baejang.dynamic_media_view.data.media.BaseMedia
+import baejang.dynamic_media_view.data.media.source.ConcatenatingMediaSourceImpl
+import baejang.dynamic_media_view.data.media.hlsVideoUrl1
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
@@ -22,7 +22,12 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var mediaSource: ConcatenatingMediaSourceImpl
     private val eventLogger = EventLogger(DefaultTrackSelector(RandomTrackSelection.Factory()))
 
-    private val mediaSet = setOf(BaseMedia("hi", hlsVideoUrl1, "m3u8"))
+    private val mediaSet = setOf(
+        BaseMedia(
+            "hi",
+            hlsVideoUrl1, "m3u8"
+        )
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,9 +38,10 @@ class PlayerActivity : AppCompatActivity() {
         mediaSourceProvider = ConcatenatingMediaSourceImpl.Provider().apply {
             setItems(mediaSet)
         }
-        mediaSource = ConcatenatingMediaSourceImpl(
-            mediaSourceProvider, ExoPlayerUtil.buildDataSourceFactory
-        )
+        mediaSource =
+            ConcatenatingMediaSourceImpl(
+                mediaSourceProvider, PlayerManager.getDataSourceFactory()
+            )
 
         playerView.player = mediaPlayer.apply {
             playWhenReady = true

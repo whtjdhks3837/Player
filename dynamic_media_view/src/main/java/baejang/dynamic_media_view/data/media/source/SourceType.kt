@@ -1,4 +1,4 @@
-package baejang.dynamic_media_view.data.source
+package baejang.dynamic_media_view.data.media.source
 
 sealed class SourceType
 sealed class Single : SourceType()

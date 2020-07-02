@@ -1,4 +1,4 @@
-package baejang.dynamic_media_view.data
+package baejang.dynamic_media_view.data.media
 
 interface Media
 
