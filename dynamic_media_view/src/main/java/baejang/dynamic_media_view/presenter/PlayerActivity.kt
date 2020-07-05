@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import baejang.dynamic_media_view.PlayerManager
 import baejang.dynamic_media_view.R
+import baejang.dynamic_media_view.data.media.source.MediaSourceProvider
+import baejang.dynamic_media_view.view.BasicControllerView
+import baejang.dynamic_media_view.view.ControllerType
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
@@ -23,12 +26,23 @@ class PlayerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_player)
         mediaPlayer = ExoPlayerFactory.newSimpleInstance(this).apply {
             addAnalyticsListener(eventLogger)
-        }
-        playerView.player = mediaPlayer.apply {
             playWhenReady = true
+            playerView.player = this
         }
+        initControllerView()
         DebugTextViewHelper(mediaPlayer, debugText).start()
         mediaPlayer.prepare(mediaSourceProvider.getMediaSource())
+    }
+
+    private fun initControllerView() {
+        playerView.useController = false
+        if (mediaSourceProvider !is MediaSourceProvider.Multiple) {
+            return
+        }
+        when (intent.getIntExtra(PlayerManager.CONTROLLER_TYPE, -1)) {
+            ControllerType.Basic.value -> BasicControllerView(playerView, mediaSourceProvider)
+            else -> playerView.useController = true
+        }
     }
 
     override fun onResume() {
