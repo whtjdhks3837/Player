@@ -8,10 +8,13 @@ import baejang.dynamic_media_view.data.media.source.MediaSourceProvider
 import baejang.dynamic_media_view.data.media.source.MediaSourceType
 import baejang.dynamic_media_view.data.source.provider.DataSourceFactoryProvider
 import baejang.dynamic_media_view.data.source.provider.DataSourceType
+import baejang.dynamic_media_view.view.ControllerType
 import baejang.dynamic_media_view.presenter.PlayerActivity
 
 object PlayerManager {
     private lateinit var mediaSourceProvider: MediaSourceProvider<*>
+
+    const val CONTROLLER_TYPE = "controller_type"
 
     @JvmStatic
     fun <T : Media> start(context: Context, params: Params<T>) {
@@ -20,9 +23,11 @@ object PlayerManager {
         mediaSourceProvider = MediaSourceProvider.of(
             params.mediaSet, dataSourceFactory, params.mediaSourceType
         )
+        val intent = Intent(context, PlayerActivity::class.java).apply {
+            putExtra(CONTROLLER_TYPE, params.controllerType.value)
+        }
         when (mediaSourceProvider) {
-            is ConcatenatingMediaSourceProvider ->
-                context.startActivity(Intent(context, PlayerActivity::class.java))
+            is ConcatenatingMediaSourceProvider -> context.startActivity(intent)
         }
     }
 
@@ -34,11 +39,13 @@ object PlayerManager {
         val mediaSet = builder.getMediaSet()
         val mediaSourceType = builder.getMediaSourceType()
         val dataSourceType = builder.getDataSourceType()
+        val controllerType = builder.getControllerType()
 
         class Builder<T : Media> {
             private val mediaSet = mutableSetOf<T>()
             private var mediaSourceType: MediaSourceType = MediaSourceType.Multiple.Concatenating
             private var dataSourceType: DataSourceType = DataSourceType.Cache
+            private var controllerType: ControllerType = ControllerType.Default
 
             fun setMediaSet(mediaSet: Set<T>): Builder<T> {
                 this.mediaSet.clear()
@@ -61,6 +68,13 @@ object PlayerManager {
             }
 
             fun getDataSourceType() = dataSourceType
+
+            fun setControllerType(type: ControllerType): Builder<T> {
+                this.controllerType = type
+                return this
+            }
+
+            fun getControllerType() = controllerType
 
             fun build() = Params(this)
         }

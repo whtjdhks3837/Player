@@ -12,7 +12,7 @@ interface DataSourceFactoryProvider<T : DataSourceFactoryProvider.Params, R : Da
     companion object {
         fun of(context: Context, type: DataSourceType): DataSource.Factory {
             return when (type) {
-                is DataSourceType.Cache -> CacheDataSourceFactoryProvider.create(
+                DataSourceType.Cache -> CacheDataSourceFactoryProvider.create(
                     context.applicationContext, CacheDataSourceFactoryProvider.Params()
                 )
             }

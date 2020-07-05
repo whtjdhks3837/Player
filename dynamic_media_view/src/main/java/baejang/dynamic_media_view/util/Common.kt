@@ -5,7 +5,7 @@ import baejang.dynamic_media_view.BuildConfig
 
 object Common {
 
-    fun log(msg: String, tag: String = "LOG") {
+    fun log(msg: String, tag: String = "DynamicMediaView") {
         if (BuildConfig.DEBUG) {
             Log.i(tag, "[${Thread.currentThread()}] $msg")
         }
