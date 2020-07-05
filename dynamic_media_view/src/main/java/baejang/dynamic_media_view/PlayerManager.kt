@@ -1,31 +1,68 @@
 package baejang.dynamic_media_view
 
 import android.content.Context
-import baejang.dynamic_media_view.data.source.provider.CacheDataSourceFactoryProvider
-import com.google.android.exoplayer2.upstream.DataSource
+import android.content.Intent
+import baejang.dynamic_media_view.data.media.Media
+import baejang.dynamic_media_view.data.media.source.ConcatenatingMediaSourceProvider
+import baejang.dynamic_media_view.data.media.source.MediaSourceProvider
+import baejang.dynamic_media_view.data.media.source.MediaSourceType
+import baejang.dynamic_media_view.data.source.provider.DataSourceFactoryProvider
+import baejang.dynamic_media_view.data.source.provider.DataSourceType
+import baejang.dynamic_media_view.presenter.PlayerActivity
 
 object PlayerManager {
-
-    private lateinit var initializer: Initializer
+    private lateinit var mediaSourceProvider: MediaSourceProvider<*>
 
     @JvmStatic
-    fun init(context: Context) {
-        if (::initializer.isInitialized) return
-        initializer = Initializer(context)
+    fun <T : Media> start(context: Context, params: Params<T>) {
+        val dataSourceFactory =
+            DataSourceFactoryProvider.of(context, params.dataSourceType)
+        mediaSourceProvider = MediaSourceProvider.of(
+            params.mediaSet, dataSourceFactory, params.mediaSourceType
+        )
+        when (mediaSourceProvider) {
+            is ConcatenatingMediaSourceProvider ->
+                context.startActivity(Intent(context, PlayerActivity::class.java))
+        }
     }
 
     @JvmStatic
-    fun getDataSourceFactory() = initializer.dataSourceFactory
+    fun getMediaSourceProvider(): MediaSourceProvider<*> = mediaSourceProvider
 
-    private class Initializer(context: Context) {
-        val dataSourceFactory: DataSource.Factory
+    class Params<T : Media> private constructor(builder: Builder<T>) {
 
-        init {
-            dataSourceFactory = CacheDataSourceFactoryProvider()
-                .create(
-                context,
-                CacheDataSourceFactoryProvider.Params()
-            )
+        val mediaSet = builder.getMediaSet()
+        val mediaSourceType = builder.getMediaSourceType()
+        val dataSourceType = builder.getDataSourceType()
+
+        class Builder<T : Media> {
+            private val mediaSet = mutableSetOf<T>()
+            private var mediaSourceType: MediaSourceType = MediaSourceType.Multiple.Concatenating
+            private var dataSourceType: DataSourceType = DataSourceType.Cache
+
+            fun setMediaSet(mediaSet: Set<T>): Builder<T> {
+                this.mediaSet.clear()
+                this.mediaSet.addAll(mediaSet)
+                return this
+            }
+
+            fun getMediaSet(): Set<T> = mediaSet
+
+            fun setMediaSourceType(type: MediaSourceType): Builder<T> {
+                this.mediaSourceType = type
+                return this
+            }
+
+            fun getMediaSourceType() = mediaSourceType
+
+            fun setDataSourceType(type: DataSourceType): Builder<T> {
+                this.dataSourceType = type
+                return this
+            }
+
+            fun getDataSourceType() = dataSourceType
+
+            fun build() = Params(this)
         }
     }
 }

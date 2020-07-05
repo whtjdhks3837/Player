@@ -10,12 +10,10 @@ import com.google.android.exoplayer2.upstream.cache.*
 import com.google.android.exoplayer2.util.Util
 import java.io.File
 
-class CacheDataSourceFactoryProvider
+object CacheDataSourceFactoryProvider
     : DataSourceFactoryProvider<CacheDataSourceFactoryProvider.Params, CacheDataSourceFactory> {
 
-    companion object {
-        private const val DOWNLOAD_CONTENT_DIRECTORY = "test_player_downloads"
-    }
+    private const val DOWNLOAD_CONTENT_DIRECTORY = "test_player_downloads"
 
     override fun create(
         context: Context,
@@ -50,6 +48,6 @@ class CacheDataSourceFactoryProvider
     }
 
     data class Params(
-        val a: Int = -1
+        val dummy: Int = -1
     ) : DataSourceFactoryProvider.Params
 }
