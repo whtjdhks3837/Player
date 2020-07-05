@@ -9,10 +9,12 @@ import com.google.android.exoplayer2.upstream.DataSource
 
 class ConcatenatingMediaSourceProvider(
     private val mediaSet: Set<Media.Base>,
-    private val dataSourceFactory: DataSource.Factory
+    private val dataSourceFactory: DataSource.Factory,
+    private val position: Int = 0
 ) : MediaSourceProvider.Multiple<Media.Base> {
 
     private val mediaSource = ConcatenatingMediaSource()
+    private var currentPosition = position
 
     init {
         with(mediaSource) {
@@ -43,11 +45,15 @@ class ConcatenatingMediaSourceProvider(
         return index > 0
     }
 
-    override fun next(media: Media.Base): Media.Base? {
-        TODO("Not yet implemented")
+    override fun next(): Boolean {
+        if (currentPosition + 1 >= mediaSet.size) return false
+        mediaSource.moveMediaSource(currentPosition, currentPosition++)
+        return true
     }
 
-    override fun previous(media: Media.Base): Media.Base? {
-        TODO("Not yet implemented")
+    override fun previous(): Boolean {
+        if (currentPosition - 1 < 0) return false
+        mediaSource.moveMediaSource(currentPosition, currentPosition--)
+        return true
     }
 }

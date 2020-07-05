@@ -12,8 +12,12 @@ interface MediaSourceProvider<T : Media> {
         fun getItems(): Set<T>
         fun hasNext(media: T): Boolean
         fun hasPrevious(media: T): Boolean
-        fun next(media: T): T?
-        fun previous(media: T): T?
+        fun next(): Boolean
+        fun previous(): Boolean
+    }
+
+    interface Single<T : Media> : MediaSourceProvider<T> {
+        fun getItem(): T
     }
 
     @Suppress("UNCHECKED_CAST")
