@@ -10,10 +10,12 @@ import com.google.android.exoplayer2.upstream.cache.*
 import com.google.android.exoplayer2.util.Util
 import java.io.File
 
-object CacheDataSourceFactoryProvider
+class CacheDataSourceFactoryProvider
     : DataSourceFactoryProvider<CacheDataSourceFactoryProvider.Params, CacheDataSourceFactory> {
 
-    private const val DOWNLOAD_CONTENT_DIRECTORY = "test_player_downloads"
+    companion object {
+        private const val DOWNLOAD_CONTENT_DIRECTORY = "test_player_downloads"
+    }
 
     override fun create(
         context: Context,
@@ -41,7 +43,8 @@ object CacheDataSourceFactoryProvider
 
     private fun createCache(context: Context, databaseProvider: DatabaseProvider): Cache {
         val parent = context.getExternalFilesDir(null) ?: context.filesDir
-        val file = File(parent,
+        val file = File(
+            parent,
             DOWNLOAD_CONTENT_DIRECTORY
         )
         return SimpleCache(file, NoOpCacheEvictor(), databaseProvider)
