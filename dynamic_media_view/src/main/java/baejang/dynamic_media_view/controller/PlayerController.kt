@@ -16,9 +16,11 @@ interface PlayerController {
 
     interface Repeat {
         fun setRepeatMode(@Player.RepeatMode mode: Int)
+        fun getRepeatMode(): Int
     }
 
     interface Shuffle {
         fun setShuffle(isShuffle: Boolean)
+        fun isShuffle(): Boolean
     }
 }

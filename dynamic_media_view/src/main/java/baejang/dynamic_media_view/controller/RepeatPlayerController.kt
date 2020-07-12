@@ -9,4 +9,8 @@ class RepeatPlayerController(
     override fun setRepeatMode(mode: Int) {
         player.repeatMode = mode
     }
+
+    override fun getRepeatMode(): Int {
+        return player.repeatMode
+    }
 }

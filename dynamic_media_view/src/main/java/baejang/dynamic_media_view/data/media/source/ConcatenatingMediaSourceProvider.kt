@@ -33,27 +33,7 @@ class ConcatenatingMediaSourceProvider(
         return mediaSource
     }
 
-    override fun hasNext(media: Media.Base): Boolean {
-        val index = mediaSet.indexOf(media)
-        if (index == -1) return false
-        return index < mediaSet.size
-    }
-
-    override fun hasPrevious(media: Media.Base): Boolean {
-        val index = mediaSet.indexOf(media)
-        if (index == -1) return false
-        return index > 0
-    }
-
-    override fun next(): Boolean {
-        if (currentPosition + 1 >= mediaSet.size) return false
-        mediaSource.moveMediaSource(currentPosition, currentPosition++)
-        return true
-    }
-
-    override fun previous(): Boolean {
-        if (currentPosition - 1 < 0) return false
-        mediaSource.moveMediaSource(currentPosition, currentPosition--)
-        return true
+    override fun current(item: Media.Base): Int {
+        return mediaSet.indexOf(item)
     }
 }

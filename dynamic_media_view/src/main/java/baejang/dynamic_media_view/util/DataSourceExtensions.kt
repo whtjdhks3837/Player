@@ -11,7 +11,7 @@ import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.util.Util
 
 fun DataSource.Factory.from(uri: Uri): MediaSource {
-    return when (Util.inferContentType(uri).apply { Common.log("Type $this") }) {
+    return when (Util.inferContentType(uri).apply { log("Type $this") }) {
         C.TYPE_DASH -> DashMediaSource.Factory(this).createMediaSource(uri)
         C.TYPE_SS -> SsMediaSource.Factory(this).createMediaSource(uri)
         C.TYPE_HLS -> HlsMediaSource.Factory(this).createMediaSource(uri)

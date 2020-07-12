@@ -9,4 +9,8 @@ class ShufflePlayerController(
     override fun setShuffle(isShuffle: Boolean) {
         player.shuffleModeEnabled = isShuffle
     }
+
+    override fun isShuffle(): Boolean {
+        return player.shuffleModeEnabled
+    }
 }

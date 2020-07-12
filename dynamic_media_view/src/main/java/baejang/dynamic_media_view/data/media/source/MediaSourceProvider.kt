@@ -10,10 +10,7 @@ interface MediaSourceProvider<T : Media> {
 
     interface Multiple<T : Media> : MediaSourceProvider<T> {
         fun getItems(): Set<T>
-        fun hasNext(media: T): Boolean
-        fun hasPrevious(media: T): Boolean
-        fun next(): Boolean
-        fun previous(): Boolean
+        fun current(item: T): Int
     }
 
     interface Single<T : Media> : MediaSourceProvider<T> {

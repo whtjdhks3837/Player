@@ -4,9 +4,11 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import baejang.dynamic_media_view.PlayerManager
 import baejang.dynamic_media_view.R
+import baejang.dynamic_media_view.controller.PlayerControllerMediator
 import baejang.dynamic_media_view.data.media.source.MediaSourceProvider
 import baejang.dynamic_media_view.view.BasicControllerView
 import baejang.dynamic_media_view.view.ControllerType
+import baejang.dynamic_media_view.view.ControllerView
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
@@ -18,6 +20,7 @@ import kotlinx.android.synthetic.main.activity_player.*
 class PlayerActivity : AppCompatActivity() {
 
     private lateinit var mediaPlayer: SimpleExoPlayer
+    private lateinit var controllerView: ControllerView
     private val mediaSourceProvider = PlayerManager.getMediaSourceProvider()
     private val eventLogger = EventLogger(DefaultTrackSelector(RandomTrackSelection.Factory()))
 
@@ -37,10 +40,18 @@ class PlayerActivity : AppCompatActivity() {
     private fun initControllerView() {
         playerView.useController = false
         if (mediaSourceProvider !is MediaSourceProvider.Multiple) {
+            playerView.useController = false
             return
         }
         when (intent.getIntExtra(PlayerManager.CONTROLLER_TYPE, -1)) {
-            ControllerType.Basic.value -> BasicControllerView(playerView, mediaSourceProvider)
+            ControllerType.Basic.value -> {
+                val controller = PlayerControllerMediator(mediaPlayer).apply {
+                    setAction(PlayerControllerMediator.Action.Multiple)
+                    setAction(PlayerControllerMediator.Action.Shuffle)
+                    setAction(PlayerControllerMediator.Action.Repeat)
+                }
+                controllerView = BasicControllerView(playerView, controller)
+            }
             else -> playerView.useController = true
         }
     }
@@ -48,15 +59,18 @@ class PlayerActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         playerView.onResume()
+        controllerView.start()
     }
 
     override fun onPause() {
         super.onPause()
         playerView.onPause()
+        controllerView.pause()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         mediaPlayer.release()
+        controllerView.release()
     }
 }
