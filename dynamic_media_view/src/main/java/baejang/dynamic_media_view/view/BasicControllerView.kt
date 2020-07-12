@@ -8,8 +8,8 @@ import android.widget.FrameLayout
 import android.widget.SeekBar
 import android.widget.TextView
 import baejang.dynamic_media_view.R
-import baejang.dynamic_media_view.controller.EventListenerWrapper
 import baejang.dynamic_media_view.controller.PlayerControllerMediator
+import baejang.dynamic_media_view.event.PlayerListener
 import baejang.dynamic_media_view.util.getDrawable
 import baejang.dynamic_media_view.util.isPlaying
 import baejang.dynamic_media_view.util.log
@@ -19,7 +19,8 @@ import com.google.android.exoplayer2.Player.*
 
 class BasicControllerView(
     private val root: ViewGroup,
-    private val controllerMediator: PlayerControllerMediator
+    private val controllerMediator: PlayerControllerMediator,
+    private val eventListener: PlayerListener
 ) : ControllerView {
 
     private val view: View = LayoutInflater.from(root.context)
@@ -31,7 +32,6 @@ class BasicControllerView(
     private val multiple = controllerMediator.getMultiple()
     private val repeat = controllerMediator.getRepeat()
     private val shuffle = controllerMediator.getShuffle()
-    private val eventListener = EventListenerWrapper(player)
 
     private val previousBtn = view.findViewById<View>(R.id.previous_btn)
     private val nextBtn = view.findViewById<View>(R.id.next_btn)
@@ -68,7 +68,7 @@ class BasicControllerView(
                 REPEAT_MODE_OFF -> "Off"
                 REPEAT_MODE_ALL -> "All"
                 REPEAT_MODE_ONE -> "One"
-                else -> "invalid"
+                else -> "Invalid"
             }}"
         }
     }
@@ -78,7 +78,7 @@ class BasicControllerView(
         with(shuffleBtn) {
             background = if (isShuffle) context getDrawable R.drawable.ic_shuffle_on_24dp
             else context getDrawable R.drawable.ic_shuffle_off_24dp
-            context toast "shuffle $isShuffle"
+            context toast "Shuffle $isShuffle"
         }
     }
 
@@ -132,17 +132,5 @@ class BasicControllerView(
 
     private fun setShuffleClick() = shuffleBtn.setOnClickListener {
         shuffle?.apply { shuffle.setShuffle(!isShuffle()) }
-    }
-
-    override fun start() {
-        eventListener.start()
-    }
-
-    override fun pause() {
-        eventListener.pause()
-    }
-
-    override fun release() {
-        eventListener.release()
     }
 }

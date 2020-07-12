@@ -1,29 +1,31 @@
-package baejang.dynamic_media_view.controller
+package baejang.dynamic_media_view.event
 
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 
-class EventListenerWrapper(private val player: Player) : Player.EventListener {
+class PlayerListenerWrapper(
+    private val player: Player
+) : PlayerListener, Player.EventListener {
 
-    var onPlayIdleCallback: ((Boolean, Int) -> Unit)? = null
-    var onPlayBufferingCallback: ((Boolean, Int) -> Unit)? = null
-    var onPlayReadyCallback: ((Boolean, Int) -> Unit)? = null
-    var onPlayEndCallback: ((Boolean, Int) -> Unit)? = null
-    var onRepeatModeCallback: ((Int) -> Unit)? = null
-    var onShuffleEnabledCallback: ((Boolean) -> Unit)? = null
-    var onErrorCallback: ((ExoPlaybackException?) -> Unit)? = null
+    override var onPlayIdleCallback: ((Boolean, Int) -> Unit)? = null
+    override var onPlayBufferingCallback: ((Boolean, Int) -> Unit)? = null
+    override var onPlayReadyCallback: ((Boolean, Int) -> Unit)? = null
+    override var onPlayEndCallback: ((Boolean, Int) -> Unit)? = null
+    override var onRepeatModeCallback: ((Int) -> Unit)? = null
+    override var onShuffleEnabledCallback: ((Boolean) -> Unit)? = null
+    override var onErrorCallback: ((ExoPlaybackException?) -> Unit)? = null
 
-    fun start() {
+    override fun start() {
         player.addListener(this)
     }
 
-    fun pause() {
+    override fun pause() {
         player.removeListener(this)
     }
 
-    fun release() {
+    override fun release() {
         player.removeListener(this)
         onPlayIdleCallback = null
         onPlayBufferingCallback = null
@@ -58,12 +60,5 @@ class EventListenerWrapper(private val player: Player) : Player.EventListener {
     override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
         super.onShuffleModeEnabledChanged(shuffleModeEnabled)
         onShuffleEnabledCallback?.invoke(shuffleModeEnabled)
-    }
-
-    override fun onTracksChanged(
-        trackGroups: TrackGroupArray?,
-        trackSelections: TrackSelectionArray?
-    ) {
-        super.onTracksChanged(trackGroups, trackSelections)
     }
 }

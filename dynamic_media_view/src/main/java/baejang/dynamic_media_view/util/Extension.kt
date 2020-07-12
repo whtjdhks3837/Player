@@ -5,8 +5,12 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
+import baejang.dynamic_media_view.BuildConfig
 
-infix fun Any.log(msg: String) = Log.i(this::class.java.simpleName, msg)
+infix fun Any.log(msg: String) {
+    if (BuildConfig.DEBUG) Log.i(this::class.java.simpleName, "[${Thread.currentThread()}] $msg")
+}
+
 
 infix fun Context.toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 

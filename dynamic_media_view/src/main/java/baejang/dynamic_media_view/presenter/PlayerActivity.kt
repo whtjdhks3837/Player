@@ -6,9 +6,15 @@ import baejang.dynamic_media_view.PlayerManager
 import baejang.dynamic_media_view.R
 import baejang.dynamic_media_view.controller.PlayerControllerMediator
 import baejang.dynamic_media_view.data.media.source.MediaSourceProvider
+import baejang.dynamic_media_view.event.MediaSourceListener
+import baejang.dynamic_media_view.event.MediaSourceListenerWrapper
+import baejang.dynamic_media_view.event.PlayerListener
+import baejang.dynamic_media_view.event.PlayerListenerWrapper
+import baejang.dynamic_media_view.util.toast
 import baejang.dynamic_media_view.view.BasicControllerView
 import baejang.dynamic_media_view.view.ControllerType
 import baejang.dynamic_media_view.view.ControllerView
+import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
@@ -21,7 +27,10 @@ class PlayerActivity : AppCompatActivity() {
 
     private lateinit var mediaPlayer: SimpleExoPlayer
     private lateinit var controllerView: ControllerView
+    private lateinit var playerListener: PlayerListener
+    private lateinit var mediaSourceListener: MediaSourceListener
     private val mediaSourceProvider = PlayerManager.getMediaSourceProvider()
+    private val mediaSource = mediaSourceProvider.getMediaSource()
     private val eventLogger = EventLogger(DefaultTrackSelector(RandomTrackSelection.Factory()))
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,9 +41,15 @@ class PlayerActivity : AppCompatActivity() {
             playWhenReady = true
             playerView.player = this
         }
+        playerListener = PlayerListenerWrapper(mediaPlayer)
+        mediaSourceListener = MediaSourceListenerWrapper(mediaSource).apply {
+            onMediaPeriodCreate = { index, _ ->
+                toast("media $index")
+            }
+        }
         initControllerView()
         DebugTextViewHelper(mediaPlayer, debugText).start()
-        mediaPlayer.prepare(mediaSourceProvider.getMediaSource())
+        mediaPlayer.prepare(mediaSource)
     }
 
     private fun initControllerView() {
@@ -50,7 +65,7 @@ class PlayerActivity : AppCompatActivity() {
                     setAction(PlayerControllerMediator.Action.Shuffle)
                     setAction(PlayerControllerMediator.Action.Repeat)
                 }
-                controllerView = BasicControllerView(playerView, controller)
+                controllerView = BasicControllerView(playerView, controller, playerListener)
             }
             else -> playerView.useController = true
         }
@@ -59,18 +74,21 @@ class PlayerActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         playerView.onResume()
-        controllerView.start()
+        playerListener.start()
+        mediaSourceListener.start()
     }
 
     override fun onPause() {
         super.onPause()
         playerView.onPause()
-        controllerView.pause()
+        playerListener.pause()
+        mediaSourceListener.pause()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         mediaPlayer.release()
-        controllerView.release()
+        playerListener.release()
+        mediaSourceListener.release()
     }
 }

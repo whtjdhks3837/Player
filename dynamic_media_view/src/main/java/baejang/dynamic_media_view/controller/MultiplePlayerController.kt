@@ -10,13 +10,13 @@ class MultiplePlayerController(
 
     override fun next(): Boolean {
         if (isRepeat()) return true
-        if (!player.hasNext()) return false
+        if (!player.hasNext() && !player.shuffleModeEnabled) return false
         return player.next().let { true }
     }
 
     override fun previous(): Boolean {
         if (isRepeat()) return true
-        if (!player.hasPrevious()) return false
+        if (!player.hasPrevious() && !player.shuffleModeEnabled) return false
         return player.previous().let { true }
     }
 

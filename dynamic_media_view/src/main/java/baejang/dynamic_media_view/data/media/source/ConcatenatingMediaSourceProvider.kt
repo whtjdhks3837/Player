@@ -9,12 +9,10 @@ import com.google.android.exoplayer2.upstream.DataSource
 
 class ConcatenatingMediaSourceProvider(
     private val mediaSet: Set<Media.Base>,
-    private val dataSourceFactory: DataSource.Factory,
-    private val position: Int = 0
+    private val dataSourceFactory: DataSource.Factory
 ) : MediaSourceProvider.Multiple<Media.Base> {
 
     private val mediaSource = ConcatenatingMediaSource()
-    private var currentPosition = position
 
     init {
         with(mediaSource) {
