@@ -1,7 +1,9 @@
 package baejang.dynamic_media_view.event
 
+import baejang.dynamic_media_view.util.log
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.Timeline
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 
@@ -38,6 +40,7 @@ class PlayerListenerWrapper(
 
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
         super.onPlayerStateChanged(playWhenReady, playbackState)
+        log("[onPlayerStateChanged]")
         when (playbackState) {
             Player.STATE_IDLE -> onPlayIdleCallback?.invoke(playWhenReady, playbackState)
             Player.STATE_BUFFERING -> onPlayBufferingCallback?.invoke(playWhenReady, playbackState)

@@ -30,8 +30,4 @@ class ConcatenatingMediaSourceProvider(
     override fun getMediaSource(): MediaSource {
         return mediaSource
     }
-
-    override fun current(item: Media.Base): Int {
-        return mediaSet.indexOf(item)
-    }
 }

@@ -2,6 +2,8 @@ package baejang.dynamic_media_view
 
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import android.os.Build
 import baejang.dynamic_media_view.data.media.Media
 import baejang.dynamic_media_view.data.media.source.ConcatenatingMediaSourceProvider
 import baejang.dynamic_media_view.data.media.source.MediaSourceProvider
@@ -25,6 +27,7 @@ object PlayerManager {
         )
         val intent = Intent(context, PlayerActivity::class.java).apply {
             putExtra(CONTROLLER_TYPE, params.controllerType.value)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) addFlags(FLAG_ACTIVITY_NEW_TASK)
         }
         when (mediaSourceProvider) {
             is ConcatenatingMediaSourceProvider -> context.startActivity(intent)

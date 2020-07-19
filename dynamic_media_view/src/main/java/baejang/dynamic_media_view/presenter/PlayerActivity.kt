@@ -10,20 +10,21 @@ import baejang.dynamic_media_view.event.MediaSourceListener
 import baejang.dynamic_media_view.event.MediaSourceListenerWrapper
 import baejang.dynamic_media_view.event.PlayerListener
 import baejang.dynamic_media_view.event.PlayerListenerWrapper
+import baejang.dynamic_media_view.util.log
 import baejang.dynamic_media_view.util.toast
 import baejang.dynamic_media_view.view.BasicControllerView
 import baejang.dynamic_media_view.view.ControllerType
 import baejang.dynamic_media_view.view.ControllerView
-import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.RandomTrackSelection
 import com.google.android.exoplayer2.ui.DebugTextViewHelper
 import com.google.android.exoplayer2.util.EventLogger
 import kotlinx.android.synthetic.main.activity_player.*
 
-class PlayerActivity : AppCompatActivity() {
+class PlayerActivity : AppCompatActivity(), AnalyticsListener {
 
     private lateinit var mediaPlayer: SimpleExoPlayer
     private lateinit var controllerView: ControllerView
@@ -31,7 +32,7 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var mediaSourceListener: MediaSourceListener
     private val mediaSourceProvider = PlayerManager.getMediaSourceProvider()
     private val mediaSource = mediaSourceProvider.getMediaSource()
-    private val eventLogger = EventLogger(DefaultTrackSelector(RandomTrackSelection.Factory()))
+    private val eventLogger = EventLogger(DefaultTrackSelector(RandomTrackSelection.Factory()), "PlayerActivity")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,5 +91,15 @@ class PlayerActivity : AppCompatActivity() {
         mediaPlayer.release()
         playerListener.release()
         mediaSourceListener.release()
+    }
+
+    override fun onSeekProcessed(eventTime: AnalyticsListener.EventTime?) {
+        super.onSeekProcessed(eventTime)
+        log("[onSeekProcessed]")
+    }
+
+    override fun onSeekStarted(eventTime: AnalyticsListener.EventTime?) {
+        super.onSeekStarted(eventTime)
+        log("[onSeekStarted]")
     }
 }
