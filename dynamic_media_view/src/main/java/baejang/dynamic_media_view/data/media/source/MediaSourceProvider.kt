@@ -4,7 +4,7 @@ import baejang.dynamic_media_view.data.media.Media
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.upstream.DataSource
 
-interface MediaSourceProvider<T : Media> {
+interface MediaSourceProvider<out T : Media> {
 
     fun getMediaSource(): MediaSource
 

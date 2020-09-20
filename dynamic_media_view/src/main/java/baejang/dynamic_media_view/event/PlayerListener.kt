@@ -7,6 +7,8 @@ interface PlayerListener {
     var onPlayBufferingCallback: ((Boolean, Int) -> Unit)?
     var onPlayReadyCallback: ((Boolean, Int) -> Unit)?
     var onPlayEndCallback: ((Boolean, Int) -> Unit)?
+    var onSeekStartedCallback: ((Long) -> Unit)?
+    var onSeekProcessedCallback: ((Long) -> Unit)?
     var onRepeatModeCallback: ((Int) -> Unit)?
     var onShuffleEnabledCallback: ((Boolean) -> Unit)?
     var onErrorCallback: ((ExoPlaybackException?) -> Unit)?

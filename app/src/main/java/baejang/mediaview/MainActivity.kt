@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import baejang.dynamic_media_view.PlayerManager
 import baejang.dynamic_media_view.data.*
 import baejang.dynamic_media_view.data.media.Media
-import baejang.dynamic_media_view.view.ControllerType
+import baejang.dynamic_media_view.ui.view.ControllerType
 import kotlinx.android.synthetic.main.content_play_list_item.view.*
 import kotlinx.android.synthetic.main.main_activity.*
 

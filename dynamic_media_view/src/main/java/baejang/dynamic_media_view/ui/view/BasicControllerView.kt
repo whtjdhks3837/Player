@@ -1,4 +1,4 @@
-package baejang.dynamic_media_view.view
+package baejang.dynamic_media_view.ui.view
 
 import android.view.Gravity
 import android.view.LayoutInflater
