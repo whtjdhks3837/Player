@@ -9,22 +9,18 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import java.lang.IllegalArgumentException
 
-fun getBitmap(context: Context, @DrawableRes resId: Int): Bitmap {
-    return when (val drawable = ContextCompat.getDrawable(context, resId)) {
+infix fun Context.getBitmap(@DrawableRes resId: Int): Bitmap {
+    return when (val drawable = ContextCompat.getDrawable(this, resId)) {
         is BitmapDrawable -> drawable.bitmap
-        is VectorDrawable -> getBitmap(drawable)
+        is VectorDrawable -> drawable.getBitmap()
         else -> throw IllegalArgumentException("unsupported")
     }
 }
 
-fun getBitmap(vectorDrawable: VectorDrawable): Bitmap {
-    return Bitmap.createBitmap(
-        vectorDrawable.intrinsicWidth,
-        vectorDrawable.intrinsicHeight,
-        Bitmap.Config.ARGB_8888
-    ).apply {
+fun VectorDrawable.getBitmap(): Bitmap {
+    return Bitmap.createBitmap(intrinsicWidth, intrinsicHeight, Bitmap.Config.ARGB_8888).apply {
         val canvas = Canvas(this)
-        vectorDrawable.setBounds(0, 0, canvas.width, canvas.height)
-        vectorDrawable.draw(canvas)
+        setBounds(0, 0, canvas.width, canvas.height)
+        draw(canvas)
     }
 }

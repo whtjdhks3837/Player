@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
 
-    <baejang.dynamic_media_view.ui.view.BasicSeekBarView
+    <baejang.dynamic_media_view.ui.view.BasicTimeSeekBarView
         android:layout_width="0dp"
         android:layout_height="200dp"
         app:layout_constraintBottom_toBottomOf="parent"

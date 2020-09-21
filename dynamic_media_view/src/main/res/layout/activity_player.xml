@@ -13,7 +13,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:resize_mode="fill"
-        app:show_buffering="when_playing" />
+        app:show_buffering="when_playing"
+        app:use_controller="false" />
 
     <TextView
         android:id="@+id/debugText"
@@ -23,5 +24,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <baejang.dynamic_media_view.ui.view.BasicTimeSeekBarView
+        android:id="@+id/seek_bar"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
