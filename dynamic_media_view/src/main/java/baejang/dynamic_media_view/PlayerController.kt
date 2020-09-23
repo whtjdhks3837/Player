@@ -4,6 +4,7 @@ import android.view.View
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import baejang.dynamic_media_view.ui.view.PlayerControllerView
 import baejang.dynamic_media_view.ui.view.TimeSeekView
 import baejang.dynamic_media_view.util.log
 import com.google.android.exoplayer2.Player
@@ -13,6 +14,7 @@ class PlayerController private constructor(builder: Builder) :
 
     private val player: Player
     private val timeSeekView: TimeSeekView?
+    private val playerControllerView: PlayerControllerView?
     private val lifecycle: Lifecycle?
 
     init {
@@ -22,12 +24,17 @@ class PlayerController private constructor(builder: Builder) :
             setPlayer(player)
             if (this !is View) throw IllegalArgumentException()
         }
+        playerControllerView = builder.getPlayerControllerView()?.apply {
+            setPlayer(player)
+            if (this !is View) throw IllegalArgumentException()
+        }
     }
 
     class Builder(val lifecycle: Lifecycle? = null) {
 
         private var player: Player? = null
         private var timeSeekView: TimeSeekView? = null
+        private var playerControllerView: PlayerControllerView? = null
 
         fun setPlayer(player: Player): Builder {
             this.player = player
@@ -39,9 +46,16 @@ class PlayerController private constructor(builder: Builder) :
             return this
         }
 
+        fun setPlayerControllerView(playerControllerView: PlayerControllerView): Builder {
+            this.playerControllerView = playerControllerView
+            return this
+        }
+
         fun getPlayer() = player
 
         fun getTimeSeekView() = timeSeekView
+
+        fun getPlayerControllerView() = playerControllerView
 
         fun build() = PlayerController(this)
     }

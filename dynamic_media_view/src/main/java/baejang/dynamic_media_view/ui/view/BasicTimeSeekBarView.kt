@@ -5,7 +5,9 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
+import android.view.View.MeasureSpec.*
 import androidx.core.content.ContextCompat
 import baejang.dynamic_media_view.R
 import baejang.dynamic_media_view.util.*
@@ -19,6 +21,7 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
         private const val DELAY_MILLIS = 1000L
     }
 
+    // TODO : Attribute 만들기
     private val handleBitmap = context getBitmap R.drawable.ic_android_24dp
     private val mainBarPaint = Paint().apply {
         color = ContextCompat.getColor(context, R.color.colorWhite)
@@ -34,6 +37,17 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
 
     private var player: Player? = null
     private var isStarted: Boolean = false
+
+    private var handleX = 0f
+
+    init {
+        setOnTouchListener { _, motionEvent ->
+            if (motionEvent.x in handleX - handleBitmap.width..handleX + handleBitmap.width)
+                log("악!")
+            else log("힝..")
+            true
+        }
+    }
 
     override fun setPlayer(player: Player) {
         if (this.player != null) return
@@ -75,12 +89,19 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        // TODO : 가로세로, DP 구하기
+        val width = when (val w = getMode(widthMeasureSpec)) {
+            EXACTLY -> if (w <= 600) 600 else getMode(widthMeasureSpec)
+            AT_MOST -> 600
+            else -> getSize(widthMeasureSpec)
+        }
+        val height = when (getMode(heightMeasureSpec)) {
+            EXACTLY, AT_MOST -> 200
+            else -> getSize(heightMeasureSpec)
+        }
+        setMeasuredDimension(width, height)
         log("Custom view density ${resources.displayMetrics.density}")
-        log(
-            "onMeasure : "
-                    + "${MeasureSpec.getSize(widthMeasureSpec)} ,"
-                    + " ${MeasureSpec.getSize(heightMeasureSpec)}"
-        )
+        log("onMeasure : ${getSize(widthMeasureSpec)} , ${getSize(heightMeasureSpec)}")
     }
 
     override fun draw(canvas: Canvas) {
@@ -106,8 +127,9 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
 
     private fun drawHandle(canvas: Canvas) {
         val per = player?.getPercent() ?: 1f
-        val handleY = (height / 2).toFloat() - (handleBitmap.height / 2)
+        val handleY = handleBitmap getCenterYFromParent this
         val position = width * per
+        handleX = position
         log("cur : ${player?.currentPosition} , max : ${player?.duration}, per : $per")
         canvas.drawBitmap(handleBitmap, position, handleY, null)
     }

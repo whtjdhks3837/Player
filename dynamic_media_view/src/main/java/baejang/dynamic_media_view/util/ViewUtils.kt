@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.VectorDrawable
+import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import java.lang.IllegalArgumentException
@@ -23,4 +24,8 @@ fun VectorDrawable.getBitmap(): Bitmap {
         setBounds(0, 0, canvas.width, canvas.height)
         draw(canvas)
     }
+}
+
+infix fun Bitmap.getCenterYFromParent(view: View): Float {
+    return (view.height / 2).toFloat() - (height / 2)
 }
