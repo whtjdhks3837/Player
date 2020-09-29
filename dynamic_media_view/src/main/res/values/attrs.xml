@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BasicTimeSeekBarView">
+        <attr name="handleSrc" format="reference|integer" />
+        <attr name="mainBarColor" format="reference|color" />
+        <attr name="timeColor" format="reference|color" />
+    </declare-styleable>
+</resources>

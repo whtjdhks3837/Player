@@ -36,6 +36,9 @@
         android:layout_width="match_parent"
         android:layout_height="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:handleSrc="@drawable/ic_android_24dp"
+        app:timeColor="#000000"
+        app:mainBarColor="#000000"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

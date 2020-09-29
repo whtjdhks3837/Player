@@ -15,37 +15,89 @@ import com.google.android.exoplayer2.Player
 
 class BasicTimeSeekBarView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : View(context, attrs, defStyleAttr), TimeSeekView {
+) : View(context, attrs, defStyleAttr), TimeSeekView, View.OnTouchListener {
 
     companion object {
         private const val DELAY_MILLIS = 1000L
     }
 
-    // TODO : Attribute 만들기
-    private val handleBitmap = context getBitmap R.drawable.ic_android_24dp
+    private enum class Action {
+        HandleMoving, None
+    }
+
+    private var action = Action.None
+
+    private val typedArray = context.theme.obtainStyledAttributes(
+        attrs, R.styleable.BasicTimeSeekBarView, 0, 0
+    )
+    // TODO : Handle resizing
+    private val handleBitmap = context getBitmap typedArray.getResourceId(
+        R.styleable.BasicTimeSeekBarView_handleSrc,
+        R.drawable.ic_circle_24dp
+    )
     private val mainBarPaint = Paint().apply {
-        color = ContextCompat.getColor(context, R.color.colorWhite)
+        color = typedArray.getColor(
+            R.styleable.BasicTimeSeekBarView_mainBarColor,
+            ContextCompat.getColor(context, R.color.colorWhite)
+        )
     }
     private val leftTimeTextPaint = Paint().apply {
-        color = ContextCompat.getColor(context, R.color.colorWhite)
+        color = typedArray.getColor(
+            R.styleable.BasicTimeSeekBarView_timeColor,
+            ContextCompat.getColor(context, R.color.colorWhite)
+        )
         textSize = 30f
     }
     private val rightTimeTextPaint = Paint().apply {
-        color = ContextCompat.getColor(context, R.color.colorWhite)
+        color = typedArray.getColor(
+            R.styleable.BasicTimeSeekBarView_timeColor,
+            ContextCompat.getColor(context, R.color.colorWhite)
+        )
         textSize = 30f
     }
 
     private var player: Player? = null
     private var isStarted: Boolean = false
 
-    private var handleX = 0f
+    private var handleArea: HandleArea? = null
 
     init {
-        setOnTouchListener { _, motionEvent ->
-            if (motionEvent.x in handleX - handleBitmap.width..handleX + handleBitmap.width)
-                log("악!")
-            else log("힝..")
-            true
+        setOnTouchListener(this)
+    }
+
+    private data class HandleArea(val width: Int, val height: Int, var x: Float, var y: Float) {
+        fun getXArea() = (x - (width / 2) - 30..x + (width / 2) + 30)
+        fun print() = log("width : $width , height : $height , x : $x , y : $y")
+    }
+
+    override fun onTouch(view: View, event: MotionEvent): Boolean {
+        // TODO : 멀티 포인터 처리
+        when (event.actionMasked) {
+            MotionEvent.ACTION_MOVE -> handleArea?.let {
+                if (event.x in it.getXArea()) onMoveHandle(event)
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL ->
+                if (action == Action.HandleMoving) onCancelMoveHandle()
+
+        }
+        return true
+    }
+
+    private fun onMoveHandle(event: MotionEvent) {
+        action = Action.HandleMoving
+        handleArea?.let {
+            it.x = event.x
+            it.print()
+        }
+        invalidate()
+    }
+
+    private fun onCancelMoveHandle() {
+        action = Action.None
+        val handlePer = (handleArea?.x ?: 1f) / width
+        player?.let {
+            val newPosition = (it.duration * handlePer).toLong()
+            it.seekTo(newPosition)
         }
     }
 
@@ -81,7 +133,6 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
     }
 
     private fun update() {
-        log("current: ${player?.currentPosition}")
         invalidate()
         removeCallbacks(this)
         postDelayed(this, DELAY_MILLIS)
@@ -100,8 +151,6 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
             else -> getSize(heightMeasureSpec)
         }
         setMeasuredDimension(width, height)
-        log("Custom view density ${resources.displayMetrics.density}")
-        log("onMeasure : ${getSize(widthMeasureSpec)} , ${getSize(heightMeasureSpec)}")
     }
 
     override fun draw(canvas: Canvas) {
@@ -110,7 +159,6 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
         drawTimeText(canvas)
         drawMainBar(canvas)
         drawHandle(canvas)
-        log("width $width , height $height")
     }
 
     private fun drawTimeText(canvas: Canvas) {
@@ -126,16 +174,16 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
     }
 
     private fun drawHandle(canvas: Canvas) {
-        val per = player?.getPercent() ?: 1f
-        val handleY = handleBitmap getCenterYFromParent this
-        val position = width * per
-        handleX = position
-        log("cur : ${player?.currentPosition} , max : ${player?.duration}, per : $per")
-        canvas.drawBitmap(handleBitmap, position, handleY, null)
-    }
-
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-        log("real width $w , height $h")
+        val handleX = when (action) {
+            Action.None -> (width * (player?.getPercent() ?: 1f)).apply { handleArea?.x = this }
+            Action.HandleMoving -> handleArea?.x ?: 1f
+        }
+        if (handleArea != null) canvas.drawBitmap(handleBitmap, handleX, handleArea!!.y, null)
+        else handleArea = HandleArea(
+            handleBitmap.width, handleBitmap.height, handleX, handleBitmap getCenterYFromParent this
+        ).apply {
+            canvas.drawBitmap(handleBitmap, x, y, null)
+        }
+        log("cur : ${player?.currentPosition} , max : ${player?.duration}, per : ${handleX / width}")
     }
 }
