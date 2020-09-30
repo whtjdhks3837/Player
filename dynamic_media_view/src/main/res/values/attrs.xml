@@ -5,4 +5,18 @@
         <attr name="main_bar_color" format="reference|color" />
         <attr name="time_color" format="reference|color" />
     </declare-styleable>
+
+    <declare-styleable name="BasicPlayerControllerView">
+        <attr name="play_src" format="reference|integer" />
+        <attr name="pause_src" format="reference|integer" />
+        <attr name="previous_src" format="reference|integer" />
+        <attr name="next_src" format="reference|integer" />
+        <attr name="repeat_off_src" format="reference|integer" />
+        <attr name="repeat_one_src" format="reference|integer" />
+        <attr name="repeat_all_src" format="reference|integer" />
+        <attr name="shuffle_on_src" format="reference|integer" />
+        <attr name="shuffle_off_src" format="reference|integer" />
+        <attr name="repeat_enabled" format="boolean" />
+        <attr name="shuffle_enabled" format="boolean" />
+    </declare-styleable>
 </resources>

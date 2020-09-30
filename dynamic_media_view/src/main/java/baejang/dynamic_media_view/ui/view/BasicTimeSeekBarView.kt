@@ -1,7 +1,6 @@
 package baejang.dynamic_media_view.ui.view
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
@@ -35,10 +34,12 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
         attrs, R.styleable.BasicTimeSeekBarView, 0, 0
     )
 
-    private val handleBitmap = (context getBitmap typedArray.getResourceId(
-        R.styleable.BasicTimeSeekBarView_handle_src,
-        R.drawable.ic_circle_24dp
-    )).run { resizeHandle(this) }
+    private val handleBitmap = context.getBitmap(
+        typedArray.getResourceId(
+            R.styleable.BasicTimeSeekBarView_handle_src,
+            R.drawable.ic_circle_24dp
+        )
+    ).resize(context, 24)
 
     private val mainBarPaint = Paint().apply {
         color = typedArray.getColor(
@@ -64,20 +65,10 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
     private var player: Player? = null
     private var isStarted: Boolean = false
 
-    private var handleArea: HandleArea? = null
+    private var handleArea: Area? = null
 
     init {
         setOnTouchListener(this)
-    }
-
-    private fun resizeHandle(bitmap: Bitmap): Bitmap {
-        return if (getDp(bitmap.width) in 24..32 || getDp(bitmap.height) in 24..32) bitmap
-        else Bitmap.createScaledBitmap(bitmap, getPixel(24), getPixel(24), false)
-    }
-
-    private data class HandleArea(val width: Int, val height: Int, var x: Float, var y: Float) {
-        fun getXArea() = (x - (width / 2) - 30..x + (width / 2) + 30)
-        fun print() = log("width : $width , height : $height , x : $x , y : $y")
     }
 
     override fun onTouch(view: View, event: MotionEvent): Boolean {
@@ -185,7 +176,7 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
             Action.HandleMoving -> handleArea?.x ?: 1f
         }
         if (handleArea != null) canvas.drawBitmap(handleBitmap, handleX, handleArea!!.y, null)
-        else handleArea = HandleArea(
+        else handleArea = Area(
             handleBitmap.width, handleBitmap.height, handleX, handleBitmap getCenterYFromParent this
         ).apply {
             canvas.drawBitmap(handleBitmap, x, y, null)

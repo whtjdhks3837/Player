@@ -30,6 +30,15 @@ infix fun Bitmap.getCenterYFromParent(view: View): Float {
     return (view.height / 2).toFloat() - (height / 2)
 }
 
+fun Bitmap.resize(context: Context, dp: Int): Bitmap {
+    return resize(context, dp, dp)
+}
+
+fun Bitmap.resize(context: Context, widthDp: Int, heightDp: Int): Bitmap {
+    return if (context getDp width == widthDp || context getDp height == heightDp) this
+    else Bitmap.createScaledBitmap(this, context getPixel widthDp, context getPixel heightDp, false)
+}
+
 infix fun Context.getDp(pixel: Int): Int {
     val dpi = resources.displayMetrics.density
     return (pixel / dpi).toInt()
