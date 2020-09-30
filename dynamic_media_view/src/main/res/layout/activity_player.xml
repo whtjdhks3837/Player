@@ -37,8 +37,8 @@
         android:layout_height="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:handleSrc="@drawable/ic_android_24dp"
-        app:timeColor="#000000"
-        app:mainBarColor="#000000"/>
+        app:handle_src="@drawable/ic_brightness_1_black_24dp"
+        app:time_color="#000000"
+        app:main_bar_color="#000000"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

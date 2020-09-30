@@ -29,3 +29,23 @@ fun VectorDrawable.getBitmap(): Bitmap {
 infix fun Bitmap.getCenterYFromParent(view: View): Float {
     return (view.height / 2).toFloat() - (height / 2)
 }
+
+infix fun Context.getDp(pixel: Int): Int {
+    val dpi = resources.displayMetrics.density
+    return (pixel / dpi).toInt()
+}
+
+infix fun View.getDp(pixel: Int): Int {
+    return context getDp pixel
+}
+
+infix fun Context.getPixel(dp: Int): Int {
+    val dpi = resources.displayMetrics.density
+    return (dp * dpi).toInt()
+}
+
+infix fun View.getPixel(dp: Int): Int {
+    return context getPixel dp
+}
+
+infix fun Context.getDrawable(@DrawableRes resId: Int) = ContextCompat.getDrawable(this, resId)

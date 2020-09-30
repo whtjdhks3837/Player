@@ -1,6 +1,7 @@
 package baejang.dynamic_media_view.ui.view
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
@@ -13,12 +14,15 @@ import baejang.dynamic_media_view.R
 import baejang.dynamic_media_view.util.*
 import com.google.android.exoplayer2.Player
 
+// TODO : 짜잘한 Attributes 추가
 class BasicTimeSeekBarView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr), TimeSeekView, View.OnTouchListener {
 
     companion object {
         private const val DELAY_MILLIS = 1000L
+        private const val MIN_HEIGHT_PX = 200
+        private const val MIN_WIDTH_PX = 600
     }
 
     private enum class Action {
@@ -30,27 +34,28 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
     private val typedArray = context.theme.obtainStyledAttributes(
         attrs, R.styleable.BasicTimeSeekBarView, 0, 0
     )
-    // TODO : Handle resizing
-    private val handleBitmap = context getBitmap typedArray.getResourceId(
-        R.styleable.BasicTimeSeekBarView_handleSrc,
+
+    private val handleBitmap = (context getBitmap typedArray.getResourceId(
+        R.styleable.BasicTimeSeekBarView_handle_src,
         R.drawable.ic_circle_24dp
-    )
+    )).run { resizeHandle(this) }
+
     private val mainBarPaint = Paint().apply {
         color = typedArray.getColor(
-            R.styleable.BasicTimeSeekBarView_mainBarColor,
+            R.styleable.BasicTimeSeekBarView_main_bar_color,
             ContextCompat.getColor(context, R.color.colorWhite)
         )
     }
     private val leftTimeTextPaint = Paint().apply {
         color = typedArray.getColor(
-            R.styleable.BasicTimeSeekBarView_timeColor,
+            R.styleable.BasicTimeSeekBarView_time_color,
             ContextCompat.getColor(context, R.color.colorWhite)
         )
         textSize = 30f
     }
     private val rightTimeTextPaint = Paint().apply {
         color = typedArray.getColor(
-            R.styleable.BasicTimeSeekBarView_timeColor,
+            R.styleable.BasicTimeSeekBarView_time_color,
             ContextCompat.getColor(context, R.color.colorWhite)
         )
         textSize = 30f
@@ -63,6 +68,11 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
 
     init {
         setOnTouchListener(this)
+    }
+
+    private fun resizeHandle(bitmap: Bitmap): Bitmap {
+        return if (getDp(bitmap.width) in 24..32 || getDp(bitmap.height) in 24..32) bitmap
+        else Bitmap.createScaledBitmap(bitmap, getPixel(24), getPixel(24), false)
     }
 
     private data class HandleArea(val width: Int, val height: Int, var x: Float, var y: Float) {
@@ -78,24 +88,21 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL ->
                 if (action == Action.HandleMoving) onCancelMoveHandle()
-
         }
         return true
     }
 
     private fun onMoveHandle(event: MotionEvent) {
         action = Action.HandleMoving
-        handleArea?.let {
-            it.x = event.x
-            it.print()
-        }
+        handleArea?.x = event.x
+        handleArea?.print()
         invalidate()
     }
 
     private fun onCancelMoveHandle() {
         action = Action.None
-        val handlePer = (handleArea?.x ?: 1f) / width
         player?.let {
+            val handlePer = (handleArea?.x ?: 1f) / width
             val newPosition = (it.duration * handlePer).toLong()
             it.seekTo(newPosition)
         }
@@ -140,14 +147,13 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        // TODO : 가로세로, DP 구하기
         val width = when (val w = getMode(widthMeasureSpec)) {
-            EXACTLY -> if (w <= 600) 600 else getMode(widthMeasureSpec)
-            AT_MOST -> 600
+            EXACTLY -> if (w <= MIN_WIDTH_PX) MIN_WIDTH_PX else getMode(widthMeasureSpec)
+            AT_MOST -> MIN_WIDTH_PX
             else -> getSize(widthMeasureSpec)
         }
         val height = when (getMode(heightMeasureSpec)) {
-            EXACTLY, AT_MOST -> 200
+            EXACTLY, AT_MOST -> MIN_HEIGHT_PX
             else -> getSize(heightMeasureSpec)
         }
         setMeasuredDimension(width, height)

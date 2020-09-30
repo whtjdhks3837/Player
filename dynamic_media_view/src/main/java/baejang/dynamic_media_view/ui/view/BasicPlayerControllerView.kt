@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.View
+import android.view.View.MeasureSpec.*
 import androidx.core.content.ContextCompat
 import baejang.dynamic_media_view.R
 import baejang.dynamic_media_view.util.getBitmap
@@ -14,7 +15,13 @@ import com.google.android.exoplayer2.Player
 
 class BasicPlayerControllerView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : View(context, attrs, defStyleAttr), PlayerControllerView {
+) : View(context, attrs, defStyleAttr), VideoControllerView, AudioControllerView {
+
+    companion object {
+        private const val DELAY_MILLIS = 1000L
+        private const val MIN_HEIGHT_PX = 200
+        private const val MIN_WIDTH_PX = 1000
+    }
 
     private val playBitmap = context getBitmap R.drawable.ic_play_arrow_24dp
     private val pauseBitmap = context getBitmap R.drawable.ic_pause_24dp
@@ -26,20 +33,23 @@ class BasicPlayerControllerView @JvmOverloads constructor(
 
     private var player: Player? = null
 
+    override fun setPlayer(player: Player) {
+        if (this.player != null) return
+        this.player = player
+    }
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        val width = when (val w = MeasureSpec.getMode(widthMeasureSpec)) {
-            MeasureSpec.EXACTLY -> if (w <= 600) 600 else MeasureSpec.getMode(widthMeasureSpec)
-            MeasureSpec.AT_MOST -> 600
-            else -> MeasureSpec.getSize(widthMeasureSpec)
+        val width = when (val w = getMode(widthMeasureSpec)) {
+            EXACTLY -> if (w <= MIN_WIDTH_PX) MIN_WIDTH_PX else getMode(widthMeasureSpec)
+            AT_MOST -> MIN_WIDTH_PX
+            else -> getSize(widthMeasureSpec)
         }
-        val height = when (MeasureSpec.getMode(heightMeasureSpec)) {
-            MeasureSpec.EXACTLY, MeasureSpec.AT_MOST -> 200
-            else -> MeasureSpec.getSize(heightMeasureSpec)
+        val height = when (getMode(heightMeasureSpec)) {
+            EXACTLY, AT_MOST -> MIN_HEIGHT_PX
+            else -> getSize(heightMeasureSpec)
         }
         setMeasuredDimension(width, height)
-        log("Custom view density ${resources.displayMetrics.density}")
-        log("onMeasure : $width , $height")
     }
 
     override fun draw(canvas: Canvas) {
@@ -62,11 +72,35 @@ class BasicPlayerControllerView @JvmOverloads constructor(
         canvas.drawBitmap(if (isPlaying) pauseBitmap else playBitmap, x, y, null)
     }
 
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
+    override fun play() {
+        TODO("Not yet implemented")
     }
 
-    override fun setPlayer(player: Player) {
-        this.player = player
+    override fun pause() {
+        TODO("Not yet implemented")
+    }
+
+    override fun next() {
+        TODO("Not yet implemented")
+    }
+
+    override fun previous() {
+        TODO("Not yet implemented")
+    }
+
+    override fun shuffle() {
+        TODO("Not yet implemented")
+    }
+
+    override fun repeat() {
+        TODO("Not yet implemented")
+    }
+
+    override fun setVolume(volume: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun mute() {
+        TODO("Not yet implemented")
     }
 }
