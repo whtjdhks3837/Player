@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="BasicTimeSeekBarView">
+
+    <attr name="auto_hide" format="boolean" />
+
+    <declare-styleable name="BaseTimeSeekView">
         <attr name="handle_src" format="reference|integer" />
         <attr name="main_bar_color" format="reference|color" />
         <attr name="time_color" format="reference|color" />
+        <attr name="auto_hide" />
     </declare-styleable>
 
-    <declare-styleable name="BasicPlayerControllerView">
+    <declare-styleable name="BasePlayerControllerView">
         <attr name="play_src" format="reference|integer" />
         <attr name="pause_src" format="reference|integer" />
         <attr name="previous_src" format="reference|integer" />
@@ -18,5 +22,6 @@
         <attr name="shuffle_off_src" format="reference|integer" />
         <attr name="repeat_enabled" format="boolean" />
         <attr name="shuffle_enabled" format="boolean" />
+        <attr name="auto_hide" />
     </declare-styleable>
 </resources>

@@ -1,21 +1,21 @@
 package baejang.dynamic_media_view.ui.view
 
+import android.view.View
 import com.google.android.exoplayer2.Player
 
-interface PlayerControllerView {
-    fun setPlayer(player: Player)
+interface PlayerControllerView : View.OnTouchListener, Player.EventListener {
+    fun start(player: Player)
+    fun release()
+    fun clickOnParent() {}
 }
 
-interface TimeSeekView : PlayerControllerView, Runnable, Player.EventListener {
-    fun start()
-    fun stop()
-}
+interface TimeSeekView : PlayerControllerView, Runnable
 
 interface VideoControllerView : PlayerControllerView {
     fun play()
     fun pause()
-    fun next()
-    fun previous()
+    fun next(): Boolean
+    fun previous(): Boolean
     fun shuffle()
     fun repeat()
 }

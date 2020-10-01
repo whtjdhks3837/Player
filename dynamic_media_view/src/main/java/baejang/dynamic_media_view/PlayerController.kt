@@ -9,8 +9,7 @@ import baejang.dynamic_media_view.ui.view.TimeSeekView
 import baejang.dynamic_media_view.util.log
 import com.google.android.exoplayer2.Player
 
-class PlayerController private constructor(builder: Builder) :
-    Player.EventListener, LifecycleObserver {
+class PlayerController private constructor(builder: Builder) : LifecycleObserver {
 
     private val player: Player
     private val timeSeekView: TimeSeekView?
@@ -21,11 +20,9 @@ class PlayerController private constructor(builder: Builder) :
         lifecycle = builder.lifecycle?.also { it.addObserver(this) }
         player = builder.getPlayer() ?: throw IllegalArgumentException("Player must be not null")
         timeSeekView = builder.getTimeSeekView()?.apply {
-            setPlayer(player)
             if (this !is View) throw IllegalArgumentException()
         }
         playerControllerView = builder.getPlayerControllerView()?.apply {
-            setPlayer(player)
             if (this !is View) throw IllegalArgumentException()
         }
     }
@@ -60,25 +57,30 @@ class PlayerController private constructor(builder: Builder) :
         fun build() = PlayerController(this)
     }
 
+    fun dispatchClickToChild() {
+        timeSeekView?.clickOnParent()
+        playerControllerView?.clickOnParent()
+    }
+
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun start() {
         log("start")
-        player.addListener(this)
-        timeSeekView?.start()
+        timeSeekView?.start(player)
+        playerControllerView?.start(player)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun stop() {
         log("stop")
-        player.removeListener(this)
-        timeSeekView?.stop()
+        timeSeekView?.release()
+        playerControllerView?.release()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun release() {
         log("release")
         lifecycle?.removeObserver(this)
-        player.removeListener(this)
-        timeSeekView?.stop()
+        timeSeekView?.release()
+        playerControllerView?.release()
     }
 }

@@ -30,12 +30,14 @@ class PlayerActivity : AppCompatActivity() {
             prepare(mediaSource)
             if (BuildConfig.DEBUG) addAnalyticsListener(eventLogger)
         }
-        PlayerController.Builder(lifecycle)
+        val playerController = PlayerController.Builder(lifecycle)
             .setPlayer(playerView.player)
             .setSeekBarView(seek_bar)
+            .setPlayerControllerView(player_controller)
             .build()
 
         if (BuildConfig.DEBUG) DebugTextViewHelper(mediaPlayer, debugText).start()
+        root.setOnClickListener { playerController.dispatchClickToChild() }
     }
 
     override fun onResume() {
