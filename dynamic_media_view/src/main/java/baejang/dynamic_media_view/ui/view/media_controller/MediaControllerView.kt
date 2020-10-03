@@ -15,7 +15,7 @@ abstract class MediaControllerView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : PlayerControllerView(context, attrs, defStyleAttr), MediaController, Hideable {
 
-    protected val typedArray = context.theme.obtainStyledAttributes(
+    private val typedArray = context.theme.obtainStyledAttributes(
         attrs, R.styleable.MediaControllerView, 0, 0
     )
     protected var _player: Player? = null

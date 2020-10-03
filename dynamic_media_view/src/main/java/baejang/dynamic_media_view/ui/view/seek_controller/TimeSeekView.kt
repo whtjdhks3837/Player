@@ -13,7 +13,7 @@ abstract class TimeSeekView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : PlayerControllerView(context, attrs, defStyleAttr), TimeSeekController, Hideable {
 
-    protected val typedArray = context.theme.obtainStyledAttributes(
+    private val typedArray = context.theme.obtainStyledAttributes(
         attrs, R.styleable.TimeSeekView, 0, 0
     )
     protected var _player: Player? = null
