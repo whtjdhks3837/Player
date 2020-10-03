@@ -26,14 +26,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <baejang.dynamic_media_view.ui.view.player_controller.BasicPlayerControllerView
+    <baejang.dynamic_media_view.ui.view.media_controller.BasicMediaControllerView
         android:id="@+id/player_controller"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:hide_enable="true"
         app:layout_constraintBottom_toTopOf="@id/seek_bar"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <baejang.dynamic_media_view.ui.view.seek.BasicTimeSeekBarView
+    <baejang.dynamic_media_view.ui.view.seek_controller.BasicTimeSeekBarView
         android:id="@+id/seek_bar"
         android:layout_width="match_parent"
         android:layout_height="10dp"

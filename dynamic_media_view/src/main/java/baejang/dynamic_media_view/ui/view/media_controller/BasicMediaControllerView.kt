@@ -1,4 +1,4 @@
-package baejang.dynamic_media_view.ui.view.player_controller
+package baejang.dynamic_media_view.ui.view.media_controller
 
 import android.content.Context
 import android.graphics.Canvas
@@ -9,18 +9,14 @@ import android.view.View.MeasureSpec.*
 import androidx.core.content.ContextCompat
 import baejang.dynamic_media_view.R
 import baejang.dynamic_media_view.ui.view.Area
-import baejang.dynamic_media_view.ui.view.AudioControllerView
-import baejang.dynamic_media_view.ui.view.VideoControllerView
-import baejang.dynamic_media_view.ui.view.ViewHideHelper
 import baejang.dynamic_media_view.util.getCenterYFromParent
 import baejang.dynamic_media_view.util.isPlaying
 import baejang.dynamic_media_view.util.toast
 import com.google.android.exoplayer2.Player
 
-class BasicPlayerControllerView @JvmOverloads constructor(
+class BasicMediaControllerView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : BasePlayerControllerView(context, attrs, defStyleAttr),
-    VideoControllerView, AudioControllerView {
+) : MediaControllerView(context, attrs, defStyleAttr) {
 
     companion object {
         private const val MIN_HEIGHT_PX = 200
@@ -32,10 +28,6 @@ class BasicPlayerControllerView @JvmOverloads constructor(
     private var pauseArea: Area? = null
     private var previousArea: Area? = null
     private var nextArea: Area? = null
-
-    private val hideHelper = ViewHideHelper(
-        this, typedArray.getBoolean(R.styleable.BasePlayerControllerView_auto_hide, false)
-    )
 
     init {
         setOnTouchListener(this)
@@ -69,10 +61,6 @@ class BasicPlayerControllerView @JvmOverloads constructor(
 
     private fun onTouchNext() {
         if (!next()) context toast "마지막 영상입니다."
-    }
-
-    override fun clickOnParent() {
-        if (hideHelper.isHide()) hideHelper.show()
     }
 
     override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {

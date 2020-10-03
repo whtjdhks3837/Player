@@ -1,11 +1,11 @@
 package baejang.dynamic_media_view
 
-import android.view.View
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import baejang.dynamic_media_view.ui.view.AutoHideHelper
 import baejang.dynamic_media_view.ui.view.PlayerControllerView
-import baejang.dynamic_media_view.ui.view.TimeSeekView
+import baejang.dynamic_media_view.ui.view.seek_controller.TimeSeekView
 import baejang.dynamic_media_view.util.log
 import com.google.android.exoplayer2.Player
 
@@ -15,16 +15,15 @@ class PlayerController private constructor(builder: Builder) : LifecycleObserver
     private val timeSeekView: TimeSeekView?
     private val playerControllerView: PlayerControllerView?
     private val lifecycle: Lifecycle?
+    private val hideHelper: AutoHideHelper
 
     init {
+        val views = mutableSetOf<PlayerControllerView>()
         lifecycle = builder.lifecycle?.also { it.addObserver(this) }
         player = builder.getPlayer() ?: throw IllegalArgumentException("Player must be not null")
-        timeSeekView = builder.getTimeSeekView()?.apply {
-            if (this !is View) throw IllegalArgumentException()
-        }
-        playerControllerView = builder.getPlayerControllerView()?.apply {
-            if (this !is View) throw IllegalArgumentException()
-        }
+        timeSeekView = builder.getTimeSeekView()?.apply { views.add(this) }
+        playerControllerView = builder.getPlayerControllerView()?.apply { views.add(this) }
+        hideHelper = AutoHideHelper(views)
     }
 
     class Builder(val lifecycle: Lifecycle? = null) {
@@ -57,9 +56,8 @@ class PlayerController private constructor(builder: Builder) : LifecycleObserver
         fun build() = PlayerController(this)
     }
 
-    fun dispatchClickToChild() {
-        timeSeekView?.clickOnParent()
-        playerControllerView?.clickOnParent()
+    fun showAndHide() {
+        hideHelper.showAndHide()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)

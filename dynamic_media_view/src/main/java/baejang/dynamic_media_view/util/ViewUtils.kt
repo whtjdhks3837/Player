@@ -8,7 +8,6 @@ import android.graphics.drawable.VectorDrawable
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
-import java.lang.IllegalArgumentException
 
 infix fun Context.getBitmap(@DrawableRes resId: Int): Bitmap {
     return when (val drawable = ContextCompat.getDrawable(this, resId)) {

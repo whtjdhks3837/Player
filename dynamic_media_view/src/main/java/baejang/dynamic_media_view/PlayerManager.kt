@@ -10,8 +10,8 @@ import baejang.dynamic_media_view.data.media.source.MediaSourceProvider
 import baejang.dynamic_media_view.data.media.source.MediaSourceType
 import baejang.dynamic_media_view.data.source.provider.DataSourceFactoryProvider
 import baejang.dynamic_media_view.data.source.provider.DataSourceType
-import baejang.dynamic_media_view.ui.view.ControllerType
 import baejang.dynamic_media_view.ui.PlayerActivity
+import baejang.dynamic_media_view.ui.view.ControllerType
 
 object PlayerManager {
     private lateinit var mediaSourceProvider: MediaSourceProvider<*>

@@ -1,4 +1,4 @@
-package baejang.dynamic_media_view.ui.view.seek
+package baejang.dynamic_media_view.ui.view.seek_controller
 
 import android.content.Context
 import android.graphics.Canvas
@@ -10,13 +10,11 @@ import android.view.View.MeasureSpec.*
 import androidx.core.content.ContextCompat
 import baejang.dynamic_media_view.R
 import baejang.dynamic_media_view.ui.view.Area
-import baejang.dynamic_media_view.ui.view.TimeSeekView
-import baejang.dynamic_media_view.ui.view.ViewHideHelper
 import baejang.dynamic_media_view.util.*
 
 class BasicTimeSeekBarView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : BaseTimeSeekView(context, attrs, defStyleAttr), TimeSeekView {
+) : TimeSeekView(context, attrs, defStyleAttr) {
 
     companion object {
         private const val DELAY_MILLIS = 1000L
@@ -29,9 +27,6 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
     private var action = Action.None
     private var handleArea: Area? = null
     private val paintBundle = PaintBundle(context, attrs)
-    private val hideHelper = ViewHideHelper(
-        this, typedArray.getBoolean(R.styleable.BaseTimeSeekView_auto_hide, false)
-    )
 
     init {
         setOnTouchListener(this)
@@ -41,16 +36,20 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
         // TODO : 멀티 포인터 처리
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> handleArea?.let {
-                if (event.x in it.getXArea() && event.y in it.getYArea())
+                if (event.x in it.getXArea() && event.y in it.getYArea()) {
                     action = Action.HandleMoving
+                    onEnabled?.invoke(false)
+                }
             }
-            MotionEvent.ACTION_MOVE ->
-                if (action == Action.HandleMoving) onMoveHandle(event)
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL ->
-                if (action == Action.HandleMoving) onCancelMoveHandle()
+            MotionEvent.ACTION_MOVE -> if (action == Action.HandleMoving) onMoveHandle(event)
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> if (action == Action.HandleMoving) {
+                onEnabled?.invoke(true)
+                onCancelMoveHandle()
+            }
         }
         return true
     }
+
 
     private fun onMoveHandle(event: MotionEvent) {
         handleArea?.x = event.x
@@ -65,10 +64,6 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
             val newPosition = (it.duration * handlePer).toLong()
             it.seekTo(newPosition)
         }
-    }
-
-    override fun clickOnParent() {
-        if (hideHelper.isHide()) hideHelper.show()
     }
 
     override fun update() {

@@ -1,28 +1,25 @@
-package baejang.dynamic_media_view.ui.view.player_controller
+package baejang.dynamic_media_view.ui.view.media_controller
 
 import android.content.Context
-import android.graphics.Canvas
 import android.util.AttributeSet
-import android.view.MotionEvent
-import android.view.View
-import android.view.View.MeasureSpec.*
-import androidx.core.content.ContextCompat
 import baejang.dynamic_media_view.R
-import baejang.dynamic_media_view.ui.view.Area
-import baejang.dynamic_media_view.ui.view.AudioControllerView
-import baejang.dynamic_media_view.ui.view.VideoControllerView
-import baejang.dynamic_media_view.util.*
+import baejang.dynamic_media_view.ui.view.Hideable
+import baejang.dynamic_media_view.ui.view.MediaController
+import baejang.dynamic_media_view.ui.view.PlayerControllerView
+import baejang.dynamic_media_view.util.isPlaying
+import baejang.dynamic_media_view.util.log
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.Player.*
 
-abstract class BasePlayerControllerView @JvmOverloads constructor(
+abstract class MediaControllerView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : View(context, attrs, defStyleAttr), VideoControllerView, AudioControllerView {
+) : PlayerControllerView(context, attrs, defStyleAttr), MediaController, Hideable {
 
     protected val typedArray = context.theme.obtainStyledAttributes(
-        attrs, R.styleable.BasePlayerControllerView, 0, 0
+        attrs, R.styleable.MediaControllerView, 0, 0
     )
     protected var _player: Player? = null
+    override var onEnabled: ((Boolean) -> Unit)? = null
 
     override fun start(player: Player) {
         if (_player != null) return
@@ -77,4 +74,28 @@ abstract class BasePlayerControllerView @JvmOverloads constructor(
     override fun setVolume(volume: Int) {}
 
     override fun mute() {}
+
+    override fun hide() {
+        visibility = GONE
+    }
+
+    override fun show() {
+        visibility = VISIBLE
+    }
+
+    override fun isHide(): Boolean {
+        return !isShow()
+    }
+
+    override fun isShow(): Boolean {
+        return visibility == VISIBLE
+    }
+
+    override fun isHideEnabled(): Boolean {
+        return typedArray.getBoolean(R.styleable.MediaControllerView_hide_enable, false)
+    }
+
+    override fun isAutoHide(): Boolean {
+        return typedArray.getBoolean(R.styleable.MediaControllerView_auto_hide, false)
+    }
 }

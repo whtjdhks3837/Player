@@ -3,8 +3,6 @@ package baejang.dynamic_media_view.util
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.DrawableRes
-import androidx.core.content.ContextCompat
 import baejang.dynamic_media_view.BuildConfig
 
 fun Any.log(msg: String, tag: String? = null) {

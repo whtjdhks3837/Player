@@ -2,15 +2,17 @@
 <resources>
 
     <attr name="auto_hide" format="boolean" />
+    <attr name="hide_enable" format="boolean" />
 
-    <declare-styleable name="BaseTimeSeekView">
+    <declare-styleable name="TimeSeekView">
         <attr name="handle_src" format="reference|integer" />
         <attr name="main_bar_color" format="reference|color" />
         <attr name="time_color" format="reference|color" />
         <attr name="auto_hide" />
+        <attr name="hide_enable" />
     </declare-styleable>
 
-    <declare-styleable name="BasePlayerControllerView">
+    <declare-styleable name="MediaControllerView">
         <attr name="play_src" format="reference|integer" />
         <attr name="pause_src" format="reference|integer" />
         <attr name="previous_src" format="reference|integer" />
@@ -23,5 +25,6 @@
         <attr name="repeat_enabled" format="boolean" />
         <attr name="shuffle_enabled" format="boolean" />
         <attr name="auto_hide" />
+        <attr name="hide_enable" />
     </declare-styleable>
 </resources>

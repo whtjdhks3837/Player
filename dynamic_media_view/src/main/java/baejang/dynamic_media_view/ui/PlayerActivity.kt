@@ -37,7 +37,7 @@ class PlayerActivity : AppCompatActivity() {
             .build()
 
         if (BuildConfig.DEBUG) DebugTextViewHelper(mediaPlayer, debugText).start()
-        root.setOnClickListener { playerController.dispatchClickToChild() }
+        root.setOnClickListener { playerController.showAndHide() }
     }
 
     override fun onResume() {
