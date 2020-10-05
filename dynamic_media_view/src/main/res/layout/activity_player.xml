@@ -5,44 +5,52 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.exoplayer2.ui.PlayerView
-        android:id="@+id/playerView"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/player_area"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:resize_mode="fill"
-        app:show_buffering="when_playing"
-        app:use_controller="false" />
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/debugText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <com.google.android.exoplayer2.ui.PlayerView
+            android:id="@+id/playerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:resize_mode="fill"
+            app:show_buffering="when_playing"
+            app:use_controller="false" />
 
-    <baejang.dynamic_media_view.ui.view.media_controller.BasicMediaControllerView
-        android:id="@+id/player_controller"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:hide_enable="true"
-        app:layout_constraintBottom_toTopOf="@id/seek_bar"
-        app:layout_constraintStart_toStartOf="parent" />
+        <TextView
+            android:id="@+id/debugText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <baejang.dynamic_media_view.ui.view.seek_controller.BasicTimeSeekBarView
-        android:id="@+id/seek_bar"
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
-        app:auto_hide="true"
-        app:handle_src="@drawable/ic_brightness_1_black_24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:main_bar_color="#000000"
-        app:time_color="#000000" />
+        <baejang.dynamic_media_view.ui.view.media_controller.BasicMediaControllerView
+            android:id="@+id/player_controller"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alpha="0.8"
+            app:hide_enable="true"
+            app:layout_constraintBottom_toTopOf="@id/seek_bar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:repeat_enabled="true"
+            app:shuffle_enabled="true" />
+
+        <baejang.dynamic_media_view.ui.view.seek_controller.BasicTimeSeekBarView
+            android:id="@+id/seek_bar"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:alpha="0.8"
+            app:auto_hide="true"
+            app:handle_src="@drawable/ic_brightness_1_black_24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

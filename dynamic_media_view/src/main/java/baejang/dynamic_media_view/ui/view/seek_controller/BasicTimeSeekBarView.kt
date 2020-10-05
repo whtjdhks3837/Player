@@ -88,7 +88,7 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
 
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
-        canvas.drawColor(ContextCompat.getColor(context, R.color.colorGrey))
+        canvas.drawColor(ContextCompat.getColor(context, R.color.colorBlack))
         drawTimeText(canvas)
         drawMainBar(canvas)
         drawHandle(canvas)
@@ -116,7 +116,7 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
         val handleBitmap = paintBundle.handleBitmap
         if (handleArea != null) canvas.drawBitmap(handleBitmap, handleX, handleArea!!.y, null)
         else handleArea = Area(
-            handleBitmap.width, handleBitmap.height, handleX, handleBitmap getCenterYFromParent this
+            handleBitmap.width, handleBitmap.height, handleX, handleBitmap getCenterYFrom this
         ).apply {
             canvas.drawBitmap(handleBitmap, x, y, null)
         }

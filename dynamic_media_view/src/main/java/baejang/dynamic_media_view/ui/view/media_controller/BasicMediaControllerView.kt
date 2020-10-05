@@ -9,7 +9,7 @@ import android.view.View.MeasureSpec.*
 import androidx.core.content.ContextCompat
 import baejang.dynamic_media_view.R
 import baejang.dynamic_media_view.ui.view.Area
-import baejang.dynamic_media_view.util.getCenterYFromParent
+import baejang.dynamic_media_view.util.getCenterYFrom
 import baejang.dynamic_media_view.util.isPlaying
 import baejang.dynamic_media_view.util.toast
 import com.google.android.exoplayer2.Player
@@ -19,7 +19,7 @@ class BasicMediaControllerView @JvmOverloads constructor(
 ) : MediaControllerView(context, attrs, defStyleAttr) {
 
     companion object {
-        private const val MIN_HEIGHT_PX = 200
+        private const val MIN_HEIGHT_PX = 150
         private const val MIN_WIDTH_PX = 1000
     }
 
@@ -28,6 +28,15 @@ class BasicMediaControllerView @JvmOverloads constructor(
     private var pauseArea: Area? = null
     private var previousArea: Area? = null
     private var nextArea: Area? = null
+    private var repeatArea: Area? = null
+    private var shuffleArea: Area? = null
+
+    private val isRepeatEnabled = typedArray.getBoolean(
+        R.styleable.MediaControllerView_repeat_enabled, false
+    )
+    private val isShuffleEnabled = typedArray.getBoolean(
+        R.styleable.MediaControllerView_shuffle_enabled, false
+    )
 
     init {
         setOnTouchListener(this)
@@ -36,18 +45,15 @@ class BasicMediaControllerView @JvmOverloads constructor(
     override fun onTouch(view: View, event: MotionEvent): Boolean {
         if (event.actionMasked == MotionEvent.ACTION_DOWN) {
             when {
-                isTouchedArea(playArea, event) -> onTouchPlayAndPause()
-                isTouchedArea(pauseArea, event) -> onTouchPlayAndPause()
-                isTouchedArea(previousArea, event) -> onTouchPrevious()
-                isTouchedArea(nextArea, event) -> onTouchNext()
+                Area.isTouched(playArea, event) -> onTouchPlayAndPause()
+                Area.isTouched(pauseArea, event) -> onTouchPlayAndPause()
+                Area.isTouched(previousArea, event) -> onTouchPrevious()
+                Area.isTouched(nextArea, event) -> onTouchNext()
+                Area.isTouched(repeatArea, event) -> onTouchRepeat()
+                Area.isTouched(shuffleArea, event) -> onTouchShuffle()
             }
         }
         return true
-    }
-
-    private fun isTouchedArea(area: Area?, event: MotionEvent): Boolean {
-        if (area == null) return false
-        return event.x in area.getXArea() && event.y in area.getYArea()
     }
 
     private fun onTouchPlayAndPause() {
@@ -63,8 +69,20 @@ class BasicMediaControllerView @JvmOverloads constructor(
         if (!next()) context toast "마지막 영상입니다."
     }
 
-    override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+    private fun onTouchRepeat() {
+        repeat()
+    }
 
+    private fun onTouchShuffle() {
+        shuffle()
+    }
+
+    override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+        invalidate()
+    }
+
+    override fun onRepeatModeChanged(repeatMode: Int) {
+        invalidate()
     }
 
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
@@ -87,10 +105,12 @@ class BasicMediaControllerView @JvmOverloads constructor(
 
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
-        canvas.drawColor(ContextCompat.getColor(context, R.color.colorAccent))
+        canvas.drawColor(ContextCompat.getColor(context, R.color.colorBlack))
         drawPrevious(canvas)
         drawPlayAndPause(canvas)
         drawNext(canvas)
+        if (isRepeatEnabled) drawRepeat(canvas)
+        if (isShuffleEnabled) drawShuffle(canvas)
     }
 
     private fun drawPrevious(canvas: Canvas) {
@@ -98,8 +118,8 @@ class BasicMediaControllerView @JvmOverloads constructor(
         if (previousArea == null) previousArea = Area(
             previousBitmap.width,
             previousBitmap.height,
-            width * 0.2f,
-            previousBitmap getCenterYFromParent this
+            width * 0.35f,
+            previousBitmap getCenterYFrom this
         )
         canvas.drawBitmap(previousBitmap, previousArea!!.x, previousArea!!.y, null)
     }
@@ -110,14 +130,14 @@ class BasicMediaControllerView @JvmOverloads constructor(
         if (playArea == null) playArea = Area(
             playBitmap.width,
             playBitmap.height,
-            width * 0.4f,
-            playBitmap getCenterYFromParent this
+            width * 0.5f,
+            playBitmap getCenterYFrom this
         )
         if (pauseArea == null) pauseArea = Area(
             pauseBitmap.width,
             pauseBitmap.height,
-            width * 0.4f,
-            pauseBitmap getCenterYFromParent this
+            width * 0.5f,
+            pauseBitmap getCenterYFrom this
         )
         val isPlaying = _player?.isPlaying() ?: false
         if (isPlaying) when (_player?.playbackState) {
@@ -132,9 +152,38 @@ class BasicMediaControllerView @JvmOverloads constructor(
         if (nextArea == null) nextArea = Area(
             nextBitmap.width,
             nextBitmap.height,
-            width * 0.6f,
-            nextBitmap getCenterYFromParent this
+            width * 0.65f,
+            nextBitmap getCenterYFrom this
         )
-        canvas.drawBitmap(paintBundle.nextBitmap, nextArea!!.x, nextArea!!.y, null)
+        canvas.drawBitmap(nextBitmap, nextArea!!.x, nextArea!!.y, null)
+    }
+
+    private fun drawRepeat(canvas: Canvas) {
+        val repeatBitmap = when (_player?.repeatMode) {
+            Player.REPEAT_MODE_OFF -> paintBundle.repeatOffBitmap
+            Player.REPEAT_MODE_ONE -> paintBundle.repeatOneBitmap
+            else -> paintBundle.repeatAllBitmap
+        }
+        if (repeatArea == null) repeatArea = Area(
+            repeatBitmap.width,
+            repeatBitmap.height,
+            width * 0.85f,
+            repeatBitmap getCenterYFrom this
+        )
+        canvas.drawBitmap(repeatBitmap, repeatArea!!.x, repeatArea!!.y, null)
+    }
+
+    private fun drawShuffle(canvas: Canvas) {
+        val shuffleBitmap = when (_player?.shuffleModeEnabled) {
+            true -> paintBundle.shuffleOnBitmap
+            else -> paintBundle.shuffleOffBitmap
+        }
+        if (shuffleArea == null) shuffleArea = Area(
+            shuffleBitmap.width,
+            shuffleBitmap.height,
+            width * 0.9f,
+            shuffleBitmap getCenterYFrom this
+        )
+        canvas.drawBitmap(shuffleBitmap, shuffleArea!!.x, shuffleArea!!.y, null)
     }
 }

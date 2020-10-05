@@ -15,7 +15,7 @@ abstract class MediaControllerView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : PlayerControllerView(context, attrs, defStyleAttr), MediaController, Hideable {
 
-    private val typedArray = context.theme.obtainStyledAttributes(
+    protected val typedArray = context.theme.obtainStyledAttributes(
         attrs, R.styleable.MediaControllerView, 0, 0
     )
     protected var _player: Player? = null
@@ -59,7 +59,7 @@ abstract class MediaControllerView @JvmOverloads constructor(
     }
 
     override fun shuffle() {
-        _player?.shuffleModeEnabled = true
+        _player?.shuffleModeEnabled = !(_player?.shuffleModeEnabled ?: false)
     }
 
     override fun repeat() {

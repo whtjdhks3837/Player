@@ -35,7 +35,7 @@ class PlayerActivity : AppCompatActivity() {
             .setSeekBarView(seek_bar)
             .setPlayerControllerView(player_controller)
             .build()
-
+        GestureHelper(root)
         if (BuildConfig.DEBUG) DebugTextViewHelper(mediaPlayer, debugText).start()
         root.setOnClickListener { playerController.showAndHide() }
     }

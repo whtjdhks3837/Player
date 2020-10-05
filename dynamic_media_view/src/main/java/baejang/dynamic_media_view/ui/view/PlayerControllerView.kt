@@ -17,8 +17,8 @@ interface VideoController {
     fun pause()
     fun next(): Boolean
     fun previous(): Boolean
-    fun shuffle()
-    fun repeat()
+    fun shuffle() {}
+    fun repeat() {}
 }
 
 interface AudioController {

@@ -3,7 +3,7 @@ package baejang.dynamic_media_view
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import baejang.dynamic_media_view.ui.view.AutoHideHelper
+import baejang.dynamic_media_view.ui.AutoHideHelper
 import baejang.dynamic_media_view.ui.view.PlayerControllerView
 import baejang.dynamic_media_view.ui.view.seek_controller.TimeSeekView
 import baejang.dynamic_media_view.util.log

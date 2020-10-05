@@ -25,7 +25,7 @@ fun VectorDrawable.getBitmap(): Bitmap {
     }
 }
 
-infix fun Bitmap.getCenterYFromParent(view: View): Float {
+infix fun Bitmap.getCenterYFrom(view: View): Float {
     return (view.height / 2).toFloat() - (height / 2)
 }
 
