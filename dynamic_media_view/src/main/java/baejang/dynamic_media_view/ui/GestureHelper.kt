@@ -1,51 +1,65 @@
 package baejang.dynamic_media_view.ui
 
-import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
-import androidx.core.view.GestureDetectorCompat
 import baejang.dynamic_media_view.util.log
+import kotlin.math.abs
 
-class GestureHelper(private val view: View) : GestureDetector.OnGestureListener {
+class GestureHelper(
+    private val parentView: View,
+    private val playerView: View,
+    private val bottomView: View
+) {
 
-    private val detector = GestureDetectorCompat(view.context, this)
+    private enum class Action {
+        UpScroll, DownScroll, Idle
+    }
+
+    private var action = Action.Idle
 
     init {
-        view.setOnTouchListener { _, motionEvent ->
-            if (detector.onTouchEvent(motionEvent)) false else false
+        parentView.setOnTouchListener { _, event ->
+            when (event.actionMasked) {
+                MotionEvent.ACTION_MOVE -> onMove(event)
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> onCancel(event)
+            }
+            true
         }
     }
 
-    override fun onShowPress(event: MotionEvent) {
-        log("onShowPress")
+    private fun onMove(event: MotionEvent) {
+        if (event.historySize == 0) return
+        val currentY = event.getY(0)
+        if (currentY <= 0) return
+        val offset = currentY - event.getHistoricalY(0, 0)
+        log("offset : $offset")
+        if (offset in -10f..10f) return
+        if (offset < 0) onUpGesture(offset)
+        else if (offset > 0) onDownGesture(offset)
     }
 
-    override fun onSingleTapUp(p0: MotionEvent?): Boolean {
-        log("onSingleTapUp")
-        return true
+    private fun onUpGesture(offset: Float) {
+        action = Action.UpScroll
+        playerView.pivotY = 0f
+        playerView.pivotX = parentView.width / 2f
+        val per = abs(offset) / parentView.height
+        playerView.scaleY -= per
+        playerView.scaleX -= per
     }
 
-    override fun onDown(event: MotionEvent): Boolean {
-        log("onDown")
-        return true
+    private fun onDownGesture(offset: Float) {
+        action = Action.DownScroll
+        if (playerView.scaleY >= 1f) return
+        playerView.pivotY = 0f
+        playerView.pivotX = parentView.width / 2f
+        val per = abs(offset) / parentView.height
+        playerView.scaleY = if (playerView.scaleY + per >= 1) 1f else playerView.scaleY + per
+        playerView.scaleX += per
     }
 
-    override fun onFling(p0: MotionEvent?, p1: MotionEvent?, p2: Float, p3: Float): Boolean {
-        log("onFling")
-        return true
-    }
-
-    override fun onScroll(
-        startEvent: MotionEvent,
-        moveEvent: MotionEvent,
-        distanceX: Float,
-        distanceY: Float
-    ): Boolean {
-        log("onScroll \n$startEvent \n$moveEvent \n x : $distanceX , y : $distanceY")
-        return true
-    }
-
-    override fun onLongPress(p0: MotionEvent?) {
-        log("onLongPress")
+    private fun onCancel(event: MotionEvent) {
+        action = Action.Idle
+        playerView.scaleY = 1f
+        playerView.scaleX = 1f
     }
 }

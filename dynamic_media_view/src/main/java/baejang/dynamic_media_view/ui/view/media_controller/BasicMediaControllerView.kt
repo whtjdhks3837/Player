@@ -44,13 +44,32 @@ class BasicMediaControllerView @JvmOverloads constructor(
 
     override fun onTouch(view: View, event: MotionEvent): Boolean {
         if (event.actionMasked == MotionEvent.ACTION_DOWN) {
-            when {
-                Area.isTouched(playArea, event) -> onTouchPlayAndPause()
-                Area.isTouched(pauseArea, event) -> onTouchPlayAndPause()
-                Area.isTouched(previousArea, event) -> onTouchPrevious()
-                Area.isTouched(nextArea, event) -> onTouchNext()
-                Area.isTouched(repeatArea, event) -> onTouchRepeat()
-                Area.isTouched(shuffleArea, event) -> onTouchShuffle()
+            return when {
+                Area.isTouched(playArea, event) -> {
+                    onTouchPlayAndPause()
+                    true
+                }
+                Area.isTouched(pauseArea, event) -> {
+                    onTouchPlayAndPause()
+                    true
+                }
+                Area.isTouched(previousArea, event) -> {
+                    onTouchPrevious()
+                    true
+                }
+                Area.isTouched(nextArea, event) -> {
+                    onTouchNext()
+                    true
+                }
+                Area.isTouched(repeatArea, event) -> {
+                    onTouchRepeat()
+                    true
+                }
+                Area.isTouched(shuffleArea, event) -> {
+                    onTouchShuffle()
+                    true
+                }
+                else -> false
             }
         }
         return true

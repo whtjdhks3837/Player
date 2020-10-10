@@ -35,11 +35,9 @@ class BasicTimeSeekBarView @JvmOverloads constructor(
     override fun onTouch(view: View, event: MotionEvent): Boolean {
         // TODO : 멀티 포인터 처리
         when (event.actionMasked) {
-            MotionEvent.ACTION_DOWN -> handleArea?.let {
-                if (event.x in it.getXArea() && event.y in it.getYArea()) {
-                    action = Action.HandleMoving
-                    onEnabled?.invoke(false)
-                }
+            MotionEvent.ACTION_DOWN -> if (Area.isTouched(handleArea, event)) {
+                action = Action.HandleMoving
+                onEnabled?.invoke(false)
             }
             MotionEvent.ACTION_MOVE -> if (action == Action.HandleMoving) onMoveHandle(event)
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> if (action == Action.HandleMoving) {
