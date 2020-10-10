@@ -2,6 +2,7 @@ package baejang.dynamic_media_view.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import baejang.dynamic_media_view.BuildConfig
 import baejang.dynamic_media_view.PlayerController
 import baejang.dynamic_media_view.PlayerManager
@@ -21,9 +22,20 @@ class PlayerActivity : AppCompatActivity() {
     private val mediaSource = mediaSourceProvider.getMediaSource()
     private val eventLogger = EventLogger(DefaultTrackSelector(RandomTrackSelection.Factory()))
 
+    private val mediaListAdapter = MediaListAdapter()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
+        bottom_area.adapter = mediaListAdapter
+        bottom_area.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        mediaListAdapter.setItems(
+            listOf(
+                MediaListAdapter.Item(1),
+                MediaListAdapter.Item(2),
+                MediaListAdapter.Item(3)
+            )
+        )
         mediaPlayer = ExoPlayerFactory.newSimpleInstance(this).apply {
             playWhenReady = true
             playerView.player = this
